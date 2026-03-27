@@ -8,7 +8,6 @@
 \usepackage{float}
 \usepackage{tcolorbox}
 \usepackage{enumitem}
-\usepackage{graphicx}
 
 \geometry{left=2.5cm,right=2.5cm,top=2.5cm,bottom=2.5cm}
 
@@ -60,14 +59,6 @@
     breakable
 }
 
-\newtcolorbox{theorybox}[1][]{
-    colback=purple!5!white,
-    colframe=purple!70!black,
-    fonttitle=\bfseries,
-    title=#1,
-    breakable
-}
-
 \hypersetup{
     colorlinks=true,
     linkcolor=blue,
@@ -77,7 +68,7 @@
     pdfstartview=FitH
 }
 
-\title{\textbf{Pandas数据处理实战手册}\\[0.5em]\large 从零基础到竞赛实战}
+\title{\textbf{Pandas零基础入门手册}\\[0.5em]\large 从Python基础到数据处理实战}
 \author{竞赛培训组}
 \date{\today}
 
@@ -88,43 +79,393 @@
 \newpage
 
 %========================================
-\section{前言：为什么要学习Pandas？}
+\section{Python基础入门}
 %========================================
 
-\begin{theorybox}[什么是Pandas？]
-\textbf{Pandas}是Python语言中最流行的数据处理和分析库，它的名字来源于"Panel Data"（面板数据）的缩写。Pandas提供了高效、灵活的数据结构，特别适合处理结构化数据（如表格数据）。
+\subsection{什么是编程？}
 
-\textbf{核心特点：}
+\begin{knowledgebox}[知识点：编程是什么？]
+编程就是给计算机写指令，让计算机按照我们的要求去工作。
+
+\textbf{类比理解：}
 \begin{itemize}
-    \item \textbf{DataFrame}：二维表格数据结构，类似Excel表格
-    \item \textbf{Series}：一维数组数据结构，类似表格中的一列
-    \item 强大的数据读取、清洗、转换、分析功能
-    \item 与NumPy、Matplotlib等库无缝集成
+    \item 编程就像写菜谱：步骤清晰、顺序明确
+    \item 计算机就像厨师：严格按照菜谱操作
+    \item 程序员就像菜谱作者：设计制作流程
 \end{itemize}
-\end{theorybox}
 
-\begin{theorybox}[为什么数据处理很重要？]
-在真实的数据分析项目中，数据科学家通常会将\textbf{70\%-80\%}的时间花在数据清洗和预处理上，只有20\%-30\%的时间用于建模和分析。
+\textbf{为什么要学编程？}
+\begin{itemize}
+    \item 自动化处理重复工作
+    \item 处理大量数据（Excel处理不了的）
+    \item 竞赛必备技能
+\end{itemize}
+\end{knowledgebox}
 
-\textbf{常见数据质量问题：}
+\subsection{Python是什么？}
+
+Python是一种\textbf{编程语言}，就像中文、英语是人类交流的语言一样，Python是人和计算机交流的语言。
+
+\begin{knowledgebox}[Python的特点]
 \begin{enumerate}
-    \item \textbf{缺失值}：某些记录缺少某些字段的值
-    \item \textbf{重复值}：同一条数据被记录了多次
-    \item \textbf{异常值}：明显不合理的数据（如年龄为负数）
-    \item \textbf{格式不一致}：同一类数据有多种表示方式
-    \item \textbf{数据类型错误}：数字被存储为字符串
+    \item \textbf{简单易学}
+    \begin{itemize}
+        \item 语法接近自然语言
+        \item 代码可读性强
+        \item 适合初学者入门
+    \end{itemize}
+    
+    \item \textbf{功能强大}
+    \begin{itemize}
+        \item 数据分析（Pandas）
+        \item 人工智能（TensorFlow）
+        \item 网站开发（Django）
+        \item 自动化办公
+    \end{itemize}
+    
+    \item \textbf{应用广泛}
+    \begin{itemize}
+        \item 大数据处理
+        \item 机器学习
+        \item 科学研究
+        \item 金融分析
+    \end{itemize}
+\end{enumerate}
+\end{knowledgebox}
+
+\subsection{安装Python}
+
+\textbf{步骤：}
+\begin{enumerate}
+    \item 访问官网：https://www.python.org/downloads/
+    \item 下载Python 3.8或更高版本
+    \item 运行安装程序，\textbf{务必勾选"Add Python to PATH"}
+    \item 点击Install Now完成安装
 \end{enumerate}
 
-\textbf{竞赛评分标准：}在大数据竞赛中，数据预处理通常占\textbf{30\%}的评分权重，是获得高分的关键！
-\end{theorybox}
+\begin{tipbox}[重要提示]
+安装时一定要勾选"Add Python to PATH"！
+
+如果不勾选，后续会出现"python不是内部或外部命令"的错误。
+\end{tipbox}
+
+\subsection{验证安装}
+
+\begin{enumerate}
+    \item 按Win+R，输入cmd，回车
+    \item 输入：\texttt{python --version}
+    \item 如果显示版本号（如Python 3.9.0），说明安装成功
+\end{enumerate}
 
 %========================================
-\section{四个练习数据文件介绍}
+\section{Python基础语法详解}
+%========================================
+
+\subsection{变量和数据类型}
+
+\begin{knowledgebox}[什么是变量？]
+变量就是给数据起个名字，方便以后使用。
+
+\textbf{类比理解：}
+\begin{itemize}
+    \item 变量名 = 标签（如"年龄"）
+    \item 变量值 = 实际数据（如20）
+    \item 赋值 = 把数据存到这个名字里
+\end{itemize}
+
+\textbf{示例：}
+\begin{lstlisting}
+age = 20  # 把数字20存到名字"age"里
+name = "张三"  # 把文字"张三"存到名字"name"里
+\end{lstlisting}
+\end{knowledgebox}
+
+\textbf{Python常用数据类型：}
+
+\begin{table}[H]
+\centering
+\caption{Python数据类型}
+\begin{tabular}{|l|l|l|l|}
+\hline
+\textbf{类型} & \textbf{名称} & \textbf{说明} & \textbf{示例} \\
+\hline
+int & 整数 & 没有小数的数字 & 20, 100, -5 \\
+\hline
+float & 浮点数 & 带小数的数字 & 1.75, 3.14 \\
+\hline
+str & 字符串 & 文字或字符 & "张三", "hello" \\
+\hline
+bool & 布尔值 & 真或假 & True, False \\
+\hline
+list & 列表 & 一组数据 & [1, 2, 3] \\
+\hline
+dict & 字典 & 键值对数据 & \{"name": "张三"\} \\
+\hline
+\end{tabular}
+\end{table}
+
+\subsection{列表（List）详解}
+
+\begin{knowledgebox}[什么是列表？]
+列表是一组数据的集合，用方括号[]表示。
+
+\textbf{类比理解：}
+\begin{itemize}
+    \item 列表 = 购物清单、成绩单、通讯录
+    \item 可以存放多个数据
+    \item 数据之间有顺序（第1个、第2个...）
+\end{itemize}
+\end{knowledgebox}
+
+\begin{lstlisting}[caption={列表示例}]
+# 创建一个列表
+scores = [85, 92, 78, 90, 88]
+names = ["张三", "李四", "王五"]
+
+# 访问列表元素（索引从0开始）
+print(scores[0])    # 第一个元素：85
+print(scores[1])    # 第二个元素：92
+print(names[2])     # 第三个元素：王五
+
+# 获取列表长度（元素个数）
+print(len(scores))  # 5
+
+# 添加元素到列表末尾
+scores.append(95)
+print(scores)       # [85, 92, 78, 90, 88, 95]
+\end{lstlisting}
+
+\begin{tipbox}[索引从0开始]
+Python中，列表的索引从0开始：
+\begin{itemize}
+    \item 第1个元素的索引是0
+    \item 第2个元素的索引是1
+    \item 第n个元素的索引是n-1
+\end{itemize}
+
+这是编程界的惯例，几乎所有编程语言都是这样。
+\end{tipbox}
+
+\subsection{字典（Dictionary）详解}
+
+\begin{knowledgebox}[什么是字典？]
+字典是一种键值对的数据结构，用花括号\{\}表示。
+
+\textbf{类比理解：}
+\begin{itemize}
+    \item 字典 = 真实字典（查词找释义）
+    \item 键（key）= 要查的词（如"姓名"）
+    \item 值（value）= 词的释义（如"张三"）
+\end{itemize}
+\end{knowledgebox}
+
+\begin{lstlisting}[caption={字典示例}]
+# 创建一个字典
+student = {
+    "name": "张三",
+    "age": 20,
+    "score": 85
+}
+
+# 访问字典元素（通过键访问值）
+print(student["name"])   # 张三
+print(student["age"])    # 20
+
+# 修改值
+student["score"] = 90
+print(student["score"])  # 90
+
+# 添加新键值对
+student["gender"] = "男"
+print(student)  # {"name": "张三", "age": 20, "score": 90, "gender": "男"}
+\end{lstlisting}
+
+\subsection{条件判断（if语句）}
+
+\begin{knowledgebox}[什么是条件判断？]
+条件判断就是根据不同的情况执行不同的代码。
+
+\textbf{类比理解：}
+\begin{itemize}
+    \item 如果下雨，就带伞
+    \item 如果成绩>=60，就及格
+    \item 如果年龄>=18，就是成年人
+\end{itemize}
+\end{knowledgebox}
+
+\begin{lstlisting}[caption={条件判断示例}]
+# 基础if-else
+age = 18
+
+if age >= 18:
+    print("成年人")
+else:
+    print("未成年人")
+
+# 多条件判断（if-elif-else）
+score = 85
+
+if score >= 90:
+    print("优秀")
+elif score >= 80:
+    print("良好")
+elif score >= 60:
+    print("及格")
+else:
+    print("不及格")
+\end{lstlisting}
+
+\begin{tipbox}[注意缩进]
+Python用\textbf{缩进}（空格或Tab）来表示代码块，不是大括号！
+
+\textbf{正确：}
+\begin{lstlisting}
+if age >= 18:
+    print("成年人")  # 缩进4个空格
+    print("可以考驾照")
+\end{lstlisting}
+
+\textbf{错误：}
+\begin{lstlisting}
+if age >= 18:
+print("成年人")  # 没有缩进，会报错！
+\end{lstlisting}
+\end{tipbox}
+
+\subsection{循环（for循环）}
+
+\begin{knowledgebox}[什么是循环？]
+循环就是重复执行某段代码。
+
+\textbf{类比理解：}
+\begin{itemize}
+    \item 循环 = 跑步机（重复跑步动作）
+    \item 循环 = 洗衣机（重复洗涤动作）
+    \item 循环 = 打卡（每天重复打卡）
+\end{itemize}
+\end{knowledgebox}
+
+\begin{lstlisting}[caption={循环示例}]
+# 遍历列表
+scores = [85, 92, 78, 90]
+
+for score in scores:
+    print(score)  # 依次打印每个分数
+
+# 遍历范围（0到4）
+for i in range(5):
+    print(i)  # 打印0, 1, 2, 3, 4
+
+# 遍历字典
+student = {"name": "张三", "age": 20}
+
+for key, value in student.items():
+    print(f"{key}: {value}")
+    # 输出：
+    # name: 张三
+    # age: 20
+\end{lstlisting}
+
+\subsection{函数（Function）}
+
+\begin{knowledgebox}[什么是函数？]
+函数是一段可以重复使用的代码块。
+
+\textbf{类比理解：}
+\begin{itemize}
+    \item 函数 = 洗衣机、电饭煲（封装好的功能）
+    \item 输入 = 脏衣服、米（参数）
+    \item 输出 = 干净衣服、米饭（返回值）
+    \item 好处 = 避免重复写代码
+\end{itemize}
+\end{knowledgebox}
+
+\begin{lstlisting}[caption={函数示例}]
+# 定义函数（无参数）
+def say_hello():
+    """打招呼函数"""
+    print("你好！")
+
+# 调用函数
+say_hello()  # 输出：你好！
+
+# 定义函数（有参数）
+def greet(name):
+    """带参数的打招呼函数"""
+    print(f"你好，{name}！")
+
+# 调用函数
+ greet("张三")  # 输出：你好，张三！
+
+# 定义函数（有返回值）
+def add(a, b):
+    """计算两数之和"""
+    return a + b
+
+# 调用函数
+result = add(3, 5)
+print(result)  # 输出：8
+\end{lstlisting}
+
+%========================================
+\section{Pandas安装与基础}
+%========================================
+
+\subsection{什么是Pandas？}
+
+\begin{knowledgebox}[Pandas是什么？]
+Pandas是Python的一个数据分析库，专门用来处理表格数据。
+
+\textbf{类比理解：}
+\begin{itemize}
+    \item Pandas = Excel的Python版本
+    \item 但比Excel更强大、更灵活
+    \item 可以处理几百万行数据（Excel会卡死）
+\end{itemize}
+
+\textbf{为什么叫Pandas？}
+\begin{itemize}
+    \item 和熊猫（panda）没有关系
+    \item 来自"Panel Data"（面板数据）
+    \item 是计量经济学中的术语
+\end{itemize}
+\end{knowledgebox}
+
+\subsection{安装Pandas}
+
+\begin{lstlisting}[caption={安装Pandas}]
+# 在命令行中运行
+pip install pandas
+
+# 如果安装慢，使用国内镜像
+pip install pandas -i https://pypi.tuna.tsinghua.edu.cn/simple
+\end{lstlisting}
+
+\subsection{导入Pandas}
+
+\begin{lstlisting}[caption={导入Pandas}]
+# 导入pandas，并起别名pd（行业惯例）
+import pandas as pd
+
+# 通常也导入numpy（数值计算库）
+import numpy as np
+\end{lstlisting}
+
+\begin{tipbox}[为什么要用别名pd？]
+\begin{itemize}
+    \item \textbf{简化代码}：写pd比写pandas更短
+    \item \textbf{行业惯例}：大家都用pd，方便阅读
+    \item \textbf{保持一致}：不同人写的代码风格统一
+\end{itemize}
+\end{tipbox}
+
+%========================================
+\section{四个练习数据文件}
 %========================================
 
 \subsection{数据文件概览}
 
-本手册所有示例代码都围绕以下\textbf{四个CSV文件}展开，请确保这些文件和代码在同一目录下：
+本手册所有示例代码都围绕以下\textbf{四个CSV文件}展开：
 
 \begin{table}[H]
 \centering
@@ -207,82 +548,35 @@
 \end{knowledgebox}
 
 %========================================
-\section{Python与Pandas基础}
+\section{读取CSV文件}
 %========================================
 
-\subsection{安装与导入}
+\subsection{什么是CSV文件？}
 
-\begin{theorybox}[什么是Python包？]
-Python的强大之处在于它有丰富的第三方库（包）。这些库是由全球开发者贡献的，可以帮助我们快速实现各种功能，而不需要从零开始编写代码。
+\begin{knowledgebox}[CSV文件介绍]
+CSV（Comma-Separated Values，逗号分隔值）是一种简单的数据存储格式。
 
-\textbf{常用数据科学包：}
+\textbf{特点：}
 \begin{itemize}
-    \item \textbf{pandas}：数据处理和分析
-    \item \textbf{numpy}：数值计算
-    \item \textbf{matplotlib}：数据可视化
-    \item \textbf{scikit-learn}：机器学习
-\end{itemize}
-\end{theorybox}
-
-\begin{lstlisting}[caption={安装Pandas}]
-# 在命令行中运行
-pip install pandas
-\end{lstlisting}
-
-\begin{lstlisting}[caption={导入Pandas}]
-import pandas as pd
-import numpy as np
-\end{lstlisting}
-
-\begin{tipbox}[导入别名约定]
-在Python数据科学社区中，有一些约定俗成的导入别名：
-\begin{itemize}
-    \item \texttt{import pandas as pd} —— pd代表pandas
-    \item \texttt{import numpy as np} —— np代表numpy
-\end{itemize}
-使用别名可以让代码更简洁，这也是行业内的标准做法。
-\end{tipbox}
-
-\subsection{读取CSV文件}
-
-\begin{theorybox}[什么是CSV文件？]
-\textbf{CSV}（Comma-Separated Values，逗号分隔值）是一种通用的、简单的数据存储格式。
-
-\textbf{CSV的特点：}
-\begin{itemize}
-    \item 纯文本格式，可以用任何文本编辑器打开
-    \item 每行是一条记录，字段之间用逗号分隔
+    \item 纯文本格式，可以用记事本打开
+    \item 每行是一条记录
+    \item 每个字段用逗号分隔
     \item 第一行通常是列名（表头）
-    \item 可以被Excel直接打开和编辑
-    \item 文件体积小，兼容性好
 \end{itemize}
 
-\textbf{示例CSV内容：}
+\textbf{示例：}
 \begin{verbatim}
-name,age,city
-张三,25,北京
-李四,30,上海
-王五,28,广州
+姓名,年龄,成绩
+张三,20,85
+李四,21,92
 \end{verbatim}
-\end{theorybox}
-
-\begin{knowledgebox}[知识点：pd.read\_csv()]
-\texttt{pd.read\_csv()}是Pandas中最常用的函数，用于读取CSV文件并转换为DataFrame对象。
-
-\textbf{基本语法：}
-\begin{verbatim}
-df = pd.read_csv('文件路径.csv')
-\end{verbatim}
-
-\textbf{常用参数：}
-\begin{itemize}
-    \item \texttt{encoding}：指定文件编码，如'utf-8'、'gbk'
-    \item \texttt{header}：指定哪一行作为列名，默认为0（第一行）
-    \item \texttt{sep}：指定分隔符，默认为逗号
-\end{itemize}
 \end{knowledgebox}
 
-\begin{lstlisting}[caption={读取四个练习文件}]
+\subsection{读取四个练习文件}
+
+\begin{lstlisting}[caption={读取CSV文件}]
+import pandas as pd
+
 # 读取电商订单数据
 df_order = pd.read_csv('01_电商订单数据_练习.csv')
 
@@ -295,6 +589,17 @@ df_missing = pd.read_csv('03_缺失值处理_练习.csv')
 # 读取格式清洗练习数据
 df_messy = pd.read_csv('04_数据格式清洗_练习.csv')
 \end{lstlisting}
+
+\begin{knowledgebox}[知识点：pd.read\_csv()]
+\texttt{pd.read\_csv()}是Pandas中最常用的函数，用于读取CSV文件。
+
+\textbf{常用参数：}
+\begin{itemize}
+    \item \texttt{encoding='utf-8'}：指定文件编码（处理中文）
+    \item \texttt{sep=','}：指定分隔符（默认是逗号）
+    \item \texttt{header=0}：指定第几行是列名（默认第0行）
+\end{itemize}
+\end{knowledgebox}
 
 \begin{practicebox}[动手练习1：读取并查看数据]
 \textbf{任务：}读取四个CSV文件，查看每个文件的基本信息。
@@ -321,21 +626,9 @@ print(df_order.head())
 
 \subsection{查看数据基本信息}
 
-\begin{theorybox}[为什么需要先查看数据？]
-在进行任何数据处理之前，我们必须先\textbf{了解数据}。就像医生看病需要先诊断一样，数据分析也需要先"诊断"数据的质量和结构。
-
-\textbf{数据探索的目的：}
-\begin{enumerate}
-    \item 了解数据规模（多少行、多少列）
-    \item 了解每列的数据类型
-    \item 发现明显的数据质量问题
-    \item 为后续的数据清洗制定策略
-\end{enumerate}
-\end{theorybox}
-
 \begin{lstlisting}[caption={查看数据形状和列名}]
 # 查看数据形状（行数，列数）
-print(df_order.shape)
+print(df_order.shape)  # 输出：(50, 9)
 
 # 查看列名
 print(df_order.columns)
@@ -344,14 +637,15 @@ print(df_order.columns)
 print(df_order.dtypes)
 \end{lstlisting}
 
-\begin{knowledgebox}[shape属性的含义]
-\texttt{df.shape}返回一个元组\texttt{(行数, 列数)}，表示数据的维度。
+\begin{knowledgebox}[知识点：shape属性]
+\texttt{shape}返回一个元组\texttt{(行数, 列数)}，表示数据的大小。
 
 \textbf{示例：}
-\begin{verbatim}
->>> df.shape
-(50, 9)  # 表示50行，9列
-\end{verbatim}
+\begin{itemize}
+    \item \texttt{(50, 9)} 表示50行9列
+    \item \texttt{df.shape[0]} 获取行数
+    \item \texttt{df.shape[1]} 获取列数
+\end{itemize}
 \end{knowledgebox}
 
 \subsection{查看数据内容}
@@ -367,31 +661,7 @@ print(df_order.tail())
 print(df_order.head(10))
 \end{lstlisting}
 
-\begin{tipbox}[head()和tail()的用法]
-\begin{itemize}
-    \item \texttt{head(n)}：查看前n行，默认n=5
-    \item \texttt{tail(n)}：查看后n行，默认n=5
-\end{itemize}
-查看数据的开头可以了解数据结构，查看结尾可以检查数据是否完整导入。
-\end{tipbox}
-
 \subsection{统计信息}
-
-\begin{theorybox}[描述性统计]
-描述性统计是对数据特征进行总结和描述的方法。通过统计量，我们可以快速了解数据的分布情况。
-
-\textbf{常用统计量：}
-\begin{itemize}
-    \item \textbf{count}：非空值数量
-    \item \textbf{mean}：平均值
-    \item \textbf{std}：标准差（数据离散程度）
-    \item \textbf{min}：最小值
-    \item \textbf{25\%}：第一四分位数（Q1）
-    \item \textbf{50\%}：中位数
-    \item \textbf{75\%}：第三四分位数（Q3）
-    \item \textbf{max}：最大值
-\end{itemize}
-\end{theorybox}
 
 \begin{lstlisting}[caption={使用describe()查看统计信息}]
 # 查看数值列的统计信息
@@ -401,16 +671,18 @@ print(df_order.describe())
 print(df_order.isnull().sum())
 \end{lstlisting}
 
-\begin{knowledgebox}[知识点：isnull()和sum()]
-\texttt{isnull()}函数用于检测缺失值，返回一个布尔值的DataFrame，缺失值位置为True。
-
-\texttt{sum()}函数对布尔值进行求和时，True被当作1，False被当作0，因此可以直接统计每列的缺失值数量。
-
-\textbf{执行流程：}
-\begin{enumerate}
-    \item \texttt{df.isnull()} → 生成布尔值表格
-    \item \texttt{.sum()} → 对每列求和（统计True的数量）
-\end{enumerate}
+\begin{knowledgebox}[知识点：describe()方法]
+\texttt{describe()}方法返回数值列的统计摘要：
+\begin{itemize}
+    \item \texttt{count}：非空值数量
+    \item \texttt{mean}：平均值
+    \item \texttt{std}：标准差
+    \item \texttt{min}：最小值
+    \item \texttt{25\%}：第25百分位数（Q1）
+    \item \texttt{50\%}：中位数
+    \item \texttt{75\%}：第75百分位数（Q3）
+    \item \texttt{max}：最大值
+\end{itemize}
 \end{knowledgebox}
 
 \begin{practicebox}[动手练习2：探索传感器数据]
@@ -440,16 +712,6 @@ print("传感器列表：", df_sensor['sensor_id'].unique())
 
 \subsection{选择列}
 
-\begin{theorybox}[DataFrame的列选择]
-在Pandas中，选择列是最常用的操作之一。DataFrame可以看作是由多个Series（列）组成的字典。
-
-\textbf{两种选择方式：}
-\begin{enumerate}
-    \item \textbf{单列选择}：返回一个Series对象
-    \item \textbf{多列选择}：返回一个DataFrame对象
-\end{enumerate}
-\end{theorybox}
-
 \begin{lstlisting}[caption={选择单列和多列}]
 # 选择单列（商品名称）
 products = df_order['product_name']
@@ -458,25 +720,15 @@ products = df_order['product_name']
 order_info = df_order[['order_id', 'product_name', 'price']]
 \end{lstlisting}
 
-\begin{tipbox}[注意方括号的区别]
+\begin{knowledgebox}[知识点：选择单列vs多列]
 \begin{itemize}
-    \item \texttt{df['列名']} —— 单层方括号，选择单列，返回Series
-    \item \texttt{df[['列1', '列2']]} —— 双层方括号，选择多列，返回DataFrame
+    \item \textbf{单列}：\texttt{df['列名']}，返回Series
+    \item \textbf{多列}：\texttt{df[['列1', '列2']]}，返回DataFrame
+    \item \textbf{注意}：多列要用两个方括号！
 \end{itemize}
-\end{tipbox}
+\end{knowledgebox}
 
 \subsection{选择行}
-
-\begin{theorybox}[iloc和loc的区别]
-Pandas提供了两种主要的行选择方式：
-
-\begin{enumerate}
-    \item \textbf{iloc}：基于\textbf{整数位置}索引（从0开始）
-    \item \textbf{loc}：基于\textbf{标签}索引（使用行标签）
-\end{enumerate}
-
-对于刚读取的CSV文件，行标签默认就是整数0, 1, 2...，所以iloc和loc看起来效果相似。但当数据经过筛选、排序后，行标签可能不再是连续的整数，这时两者的区别就会显现。
-\end{theorybox}
 
 \begin{lstlisting}[caption={使用iloc选择行}]
 # 选择第1行（索引为0）
@@ -489,27 +741,15 @@ rows = df_order.iloc[0:5]
 rows = df_order.iloc[10:20]
 \end{lstlisting}
 
-\subsection{条件筛选}
-
-\begin{theorybox}[布尔索引]
-条件筛选是数据分析中最强大的功能之一。它的原理是\textbf{布尔索引}：
-
-\begin{enumerate}
-    \item 首先创建一个布尔条件（如\texttt{df['age'] > 18}）
-    \item 这个条件会生成一个布尔值的Series
-    \item 将这个布尔Series放入方括号中，Pandas会只返回True对应的行
-\end{enumerate}
-
-\textbf{常用比较运算符：}
+\begin{knowledgebox}[知识点：iloc vs loc]
 \begin{itemize}
-    \item \texttt{==} 等于
-    \item \texttt{!=} 不等于
-    \item \texttt{>} 大于
-    \item \texttt{<} 小于
-    \item \texttt{>=} 大于等于
-    \item \texttt{<=} 小于等于
+    \item \texttt{iloc}：按\textbf{位置}选择（用数字索引）
+    \item \texttt{loc}：按\textbf{标签}选择（用行名）
+    \item 新手建议先用\texttt{iloc}，更直观
 \end{itemize}
-\end{theorybox}
+\end{knowledgebox}
+
+\subsection{条件筛选}
 
 \begin{lstlisting}[caption={条件筛选示例}]
 # 筛选数量大于1的订单
@@ -518,6 +758,24 @@ large_orders = df_order[df_order['quantity'] > 1]
 # 筛选特定商品
 iphone_orders = df_order[df_order['product_name'] == 'iPhone 14 Pro']
 \end{lstlisting}
+
+\begin{knowledgebox}[知识点：条件筛选原理]
+条件筛选的原理：
+\begin{enumerate}
+    \item \texttt{df['列名'] > 值} 返回一个布尔Series（True/False）
+    \item \texttt{df[布尔Series]} 返回True对应的行
+\end{enumerate}
+
+\textbf{常用条件运算符：}
+\begin{itemize}
+    \item \texttt{==}：等于
+    \item \texttt{!=}：不等于
+    \item \texttt{>}：大于
+    \item \texttt{<}：小于
+    \item \texttt{>=}：大于等于
+    \item \texttt{<=}：小于等于
+\end{itemize}
+\end{knowledgebox}
 
 \begin{practicebox}[动手练习3：筛选缺失值数据]
 \textbf{任务：}使用03\_缺失值处理\_练习.csv，筛选出年龄缺失的员工。
@@ -543,25 +801,24 @@ print(f"\n共 {len(missing_age)} 人年龄缺失")
 
 \subsection{什么是缺失值？}
 
-\begin{theorybox}[缺失值的产生原因]
-缺失值（Missing Values）是指数据集中某些记录在某些字段上没有值。缺失值在真实数据中非常常见。
+\begin{knowledgebox}[缺失值介绍]
+缺失值就是数据表中某些单元格没有数据，显示为NaN（Not a Number）或空值。
 
-\textbf{缺失值的常见原因：}
-\begin{enumerate}
-    \item \textbf{数据采集失败}：设备故障、网络中断
-    \item \textbf{数据录入遗漏}：人工录入时漏填
-    \item \textbf{信息不适用}：某些字段对某些记录不适用
-    \item \textbf{隐私保护}：敏感信息被故意隐藏
-    \item \textbf{数据合并问题}：多个数据源合并时字段不匹配
-\end{enumerate}
-
-\textbf{缺失值的表示方式：}
+\textbf{产生原因：}
 \begin{itemize}
-    \item Python中：\texttt{None}或\texttt{np.nan}（Not a Number）
-    \item CSV文件中：空单元格或特定标记（如"N/A"、"NULL"）
-    \item 数据库中：\texttt{NULL}
+    \item 数据采集时遗漏
+    \item 用户没有填写
+    \item 数据传输错误
+    \item 某些字段不适用
 \end{itemize}
-\end{theorybox}
+
+\textbf{为什么要处理缺失值？}
+\begin{itemize}
+    \item 缺失值会影响统计计算（如平均值）
+    \item 很多算法不接受缺失值
+    \item 缺失值可能包含有用信息
+\end{itemize}
+\end{knowledgebox}
 
 \subsection{检测缺失值}
 
@@ -574,45 +831,15 @@ missing_ratio = df_missing.isnull().sum() / len(df_missing) * 100
 print(missing_ratio)
 \end{lstlisting}
 
-\begin{knowledgebox}[缺失值检测方法]
+\begin{knowledgebox}[知识点：isnull()方法]
+\texttt{isnull()}方法返回一个布尔DataFrame：
 \begin{itemize}
-    \item \texttt{df.isnull()}：返回布尔值DataFrame，缺失值为True
-    \item \texttt{df.notnull()}：返回布尔值DataFrame，非缺失值为True
-    \item \texttt{df.isnull().sum()}：统计每列缺失值数量
-    \item \texttt{df.isnull().sum().sum()}：统计整个DataFrame的缺失值总数
+    \item \texttt{True}：表示这个单元格是缺失值
+    \item \texttt{False}：表示这个单元格有数据
 \end{itemize}
+
+\texttt{sum()}会把True当成1、False当成0，所以能统计出每列的缺失值数量。
 \end{knowledgebox}
-
-\subsection{缺失值处理策略}
-
-\begin{theorybox}[缺失值处理策略]
-处理缺失值没有绝对正确的方法，需要根据具体情况选择策略：
-
-\textbf{策略一：删除缺失值}
-\begin{itemize}
-    \item 适用场景：缺失值比例很小（如$<$5\%），且缺失是随机的
-    \item 优点：简单直接
-    \item 缺点：可能丢失有价值的信息
-\end{itemize}
-
-\textbf{策略二：填充缺失值}
-\begin{itemize}
-    \item 适用场景：缺失值比例较大，或数据很珍贵不能删除
-    \item 填充方法：
-    \begin{itemize}
-        \item 固定值填充（如0、"未知"）
-        \item 统计值填充（均值、中位数、众数）
-        \item 前后值填充（时间序列数据）
-        \item 模型预测填充（高级方法）
-    \end{itemize}
-\end{itemize}
-
-\textbf{策略三：标记缺失}
-\begin{itemize}
-    \item 创建一个新列标记哪些值是填充的
-    \item 适用于缺失本身可能有意义的情况
-\end{itemize}
-\end{theorybox}
 
 \subsection{填充缺失值}
 
@@ -633,13 +860,15 @@ mode_dept = df_missing['department'].mode()[0]
 df_missing['department'] = df_missing['department'].fillna(mode_dept)
 \end{lstlisting}
 
-\begin{theorybox}[均值、中位数、众数的选择]
+\begin{knowledgebox}[知识点：填充策略选择]
 \begin{itemize}
-    \item \textbf{均值（Mean）}：适用于数据分布对称的情况，受异常值影响大
-    \item \textbf{中位数（Median）}：适用于有异常值或分布偏斜的情况，更稳健
-    \item \textbf{众数（Mode）}：适用于分类数据，表示出现频率最高的值
+    \item \textbf{平均值}：适合正态分布的数值数据
+    \item \textbf{中位数}：适合有异常值的数据（不受极端值影响）
+    \item \textbf{众数}：适合分类数据（如性别、部门）
+    \item \textbf{固定值}：如用"未知"填充
+    \item \textbf{删除}：如果缺失值比例超过50\%，考虑删除该列
 \end{itemize}
-\end{theorybox}
+\end{knowledgebox}
 
 \begin{practicebox}[动手练习4：处理缺失值]
 \textbf{任务：}使用03\_缺失值处理\_练习.csv，完成缺失值处理。
@@ -675,24 +904,23 @@ print(df.isnull().sum())
 
 \subsection{什么是重复值？}
 
-\begin{theorybox}[重复值的产生原因]
-重复值是指数据集中完全相同的记录出现了多次。
+\begin{knowledgebox}[重复值介绍]
+重复值就是数据表中完全相同的记录出现了多次。
 
-\textbf{重复值的常见原因：}
-\begin{enumerate}
-    \item \textbf{数据录入错误}：同一条数据被重复录入
-    \item \textbf{数据合并}：多个数据源合并时产生重复
-    \item \textbf{系统问题}：网络重传、事务重复提交
-    \item \textbf{定时任务}：数据同步任务重复执行
-\end{enumerate}
-
-\textbf{重复值的影响：}
+\textbf{产生原因：}
 \begin{itemize}
-    \item 导致统计分析结果偏差
-    \item 增加存储和计算成本
-    \item 影响机器学习模型训练
+    \item 数据录入重复
+    \item 数据合并时产生
+    \item 系统故障导致重复提交
 \end{itemize}
-\end{theorybox}
+
+\textbf{为什么要处理重复值？}
+\begin{itemize}
+    \item 重复值会导致统计结果不准确
+    \item 浪费存储空间
+    \item 影响数据分析结论
+\end{itemize}
+\end{knowledgebox}
 
 \subsection{检测和删除重复值}
 
@@ -709,21 +937,12 @@ print(duplicate_rows)
 df_order_clean = df_order.drop_duplicates()
 \end{lstlisting}
 
-\begin{knowledgebox}[duplicated()和drop\_duplicates()详解]
-\texttt{duplicated()}函数：
+\begin{knowledgebox}[知识点：duplicated()方法]
+\texttt{duplicated()}方法返回一个布尔Series：
 \begin{itemize}
-    \item 返回布尔值Series，标记每行是否重复
-    \item \texttt{keep='first'}：第一次出现标记为False，后续重复标记为True
-    \item \texttt{keep='last'}：最后一次出现标记为False，前面重复标记为True
-    \item \texttt{keep=False}：所有重复行都标记为True
-\end{itemize}
-
-\texttt{drop\_duplicates()}函数：
-\begin{itemize}
-    \item 删除重复行，返回新的DataFrame
-    \item \texttt{keep='first'}：保留第一次出现的行（默认）
-    \item \texttt{keep='last'}：保留最后一次出现的行
-    \item \texttt{keep=False}：删除所有重复行
+    \item \texttt{keep='first'}：保留第一个，标记后面的为重复（默认）
+    \item \texttt{keep='last'}：保留最后一个，标记前面的为重复
+    \item \texttt{keep=False}：标记所有重复的行
 \end{itemize}
 \end{knowledgebox}
 
@@ -758,44 +977,26 @@ print(f"\n删除后行数：{len(df_clean)}")
 
 \subsection{什么是异常值？}
 
-\begin{theorybox}[异常值的定义和类型]
-异常值（Outliers）是指与数据集中大多数观测值明显不同的数据点。
+\begin{knowledgebox}[异常值介绍]
+异常值是指明显偏离正常范围的数据点。
 
-\textbf{异常值的类型：}
-\begin{enumerate}
-    \item \textbf{错误值}：数据采集或录入错误（如年龄为负数）
-    \item \textbf{真实异常}：真实存在但罕见的情况（如收入极高的人）
-    \item \textbf{特殊情况}：特定条件下的正常值（如促销期间的销量激增）
-\end{enumerate}
-
-\textbf{异常值的影响：}
+\textbf{示例：}
 \begin{itemize}
-    \item 使均值、标准差等统计量失真
-    \item 影响机器学习模型的训练效果
-    \item 可能导致错误的业务决策
+    \item 年龄为负数或超过150岁
+    \item 价格为0或异常高
+    \item 数量为负数
 \end{itemize}
-\end{theorybox}
 
-\subsection{异常值检测方法}
+\textbf{产生原因：}
+\begin{itemize}
+    \item 数据录入错误
+    \item 测量误差
+    \item 数据传输错误
+    \item 真实的极端情况（较少）
+\end{itemize}
+\end{knowledgebox}
 
-\begin{theorybox}[IQR方法（箱线图法）]
-\textbf{IQR}（Interquartile Range，四分位距）是一种常用的异常值检测方法。
-
-\textbf{计算步骤：}
-\begin{enumerate}
-    \item 计算第一四分位数 Q1（25\%分位数）
-    \item 计算第三四分位数 Q3（75\%分位数）
-    \item 计算 IQR = Q3 - Q1
-    \item 定义异常值范围：
-    \begin{itemize}
-        \item 下限 = Q1 - 1.5 × IQR
-        \item 上限 = Q3 + 1.5 × IQR
-    \end{itemize}
-    \item 超出此范围的值被认为是异常值
-\end{enumerate}
-
-\textbf{为什么是1.5倍？} 这是统计学中的经验法则，约涵盖99.3\%的正态分布数据。
-\end{theorybox}
+\subsection{检测异常值}
 
 \begin{lstlisting}[caption={使用IQR方法检测异常值}]
 # 计算IQR
@@ -813,6 +1014,20 @@ outliers = df_order[(df_order['quantity'] < lower_bound) |
 print(f"异常值数量：{len(outliers)}")
 \end{lstlisting}
 
+\begin{knowledgebox}[知识点：IQR方法原理]
+IQR（Interquartile Range，四分位距）是一种稳健的异常值检测方法：
+
+\begin{enumerate}
+    \item 把数据从小到大排序
+    \item 找到第25\%位置的数（Q1）和第75\%位置的数（Q3）
+    \item 计算IQR = Q3 - Q1
+    \item 正常数据范围：[Q1 - 1.5×IQR, Q3 + 1.5×IQR]
+    \item 超出这个范围的就是异常值
+\end{enumerate}
+
+\textbf{优点}：不受极端值影响，适合偏态分布的数据
+\end{knowledgebox}
+
 \subsection{处理异常值}
 
 \begin{lstlisting}[caption={处理异常值}]
@@ -820,39 +1035,18 @@ print(f"异常值数量：{len(outliers)}")
 df_order.loc[df_order['quantity'] < 0, 'quantity'] = 1
 \end{lstlisting}
 
-\begin{theorybox}[异常值处理策略]
-\begin{enumerate}
-    \item \textbf{删除}：如果确定是错误值，直接删除
-    \item \textbf{修正}：根据业务逻辑修正（如负数数量改为正数）
-    \item \textbf{替换}：用边界值或统计值替换
-    \item \textbf{保留}：如果是真实异常情况，保留并单独分析
-    \item \textbf{分箱}：将异常值归入特殊类别
-\end{enumerate}
-\end{theorybox}
+\begin{knowledgebox}[知识点：处理异常值的策略]
+\begin{itemize}
+    \item \textbf{删除}：直接删除异常值所在的行
+    \item \textbf{修正}：根据业务逻辑修正（如负数改为正数）
+    \item \textbf{替换}：用平均值、中位数等替换
+    \item \textbf{标记}：不删除，但添加标记列
+\end{itemize}
+\end{knowledgebox}
 
 %========================================
 \section{数据格式转换}
 %========================================
-
-\subsection{为什么需要格式转换？}
-
-\begin{theorybox}[数据类型的重要性]
-正确的数据类型对于数据分析至关重要：
-
-\begin{itemize}
-    \item \textbf{数值计算}：价格必须是数值型才能进行加减乘除
-    \item \textbf{内存效率}：正确的类型可以节省内存
-    \item \textbf{函数兼容性}：某些函数只接受特定类型
-    \item \textbf{排序和比较}：字符串"10"小于"2"，但数字10大于2
-\end{itemize}
-
-\textbf{常见类型问题：}
-\begin{enumerate}
-    \item 数字被存储为字符串（如"123元"）
-    \item 日期被存储为字符串
-    \item 分类数据没有统一格式
-\end{enumerate}
-\end{theorybox}
 
 \subsection{字符串处理}
 
@@ -865,15 +1059,20 @@ df_order['price_num'] = df_order['price'].str.replace('元', '')
 df_order['price_num'] = df_order['price_num'].astype(float)
 \end{lstlisting}
 
-\begin{knowledgebox}[字符串方法 str.XXX]
-Pandas的Series对象有一个\texttt{str}属性，提供了一系列字符串处理方法：
+\begin{knowledgebox}[知识点：str访问器]
+在Pandas中，要对字符串列进行操作，需要使用\texttt{.str}访问器：
 
 \begin{itemize}
-    \item \texttt{str.replace(a, b)}：将a替换为b
-    \item \texttt{str.strip()}：去除首尾空格
-    \item \texttt{str.lower()} / \texttt{str.upper()}：大小写转换
-    \item \texttt{str.contains()}：判断是否包含某子串
-    \item \texttt{str.split()}：分割字符串
+    \item \texttt{df['列名'].str.方法()}
+    \item 不能直接写\texttt{df['列名'].strip()}
+\end{itemize}
+
+\textbf{常用字符串方法：}
+\begin{itemize}
+    \item \texttt{str.replace('旧', '新')}：替换字符
+    \item \texttt{str.strip()}：去除前后空格
+    \item \texttt{str.lower()/upper()}：转换大小写
+    \item \texttt{str.contains('关键词')}：判断是否包含
 \end{itemize}
 \end{knowledgebox}
 
@@ -922,26 +1121,21 @@ print(df[['income', 'income_num']].head(10))
 \section{数据分组与统计}
 %========================================
 
-\subsection{分组统计的概念}
+\subsection{什么是分组统计？}
 
-\begin{theorybox}[什么是分组统计？]
-分组统计（GroupBy）是数据分析中最强大的功能之一，它的思想是：
-
-\textbf{"先分组，再统计"}
+\begin{knowledgebox}[分组统计介绍]
+分组统计就是：
+\begin{enumerate}
+    \item 先把数据按某个列分成若干组
+    \item 然后对每组进行统计计算
+\end{enumerate}
 
 \textbf{类比理解：}
 \begin{itemize}
-    \item 就像老师统计每个班级的平均分
-    \item 先按班级\textbf{分组}，再计算每组的\textbf{平均分}
+    \item 把全班同学按\textbf{性别}分组，计算每组平均成绩
+    \item 把商品按\textbf{类别}分组，计算每类总销量
 \end{itemize}
-
-\textbf{SQL中的等价概念：}
-\begin{verbatim}
-SELECT department, AVG(salary) 
-FROM employees 
-GROUP BY department;
-\end{verbatim}
-\end{theorybox}
+\end{knowledgebox}
 
 \subsection{分组统计}
 
@@ -958,20 +1152,21 @@ stats = df_missing.groupby('department').agg({
 print(stats)
 \end{lstlisting}
 
-\begin{knowledgebox}[groupby()详解]
-\texttt{groupby()}的基本流程：
+\begin{knowledgebox}[知识点：groupby的工作流程]
+\texttt{groupby()}的工作流程：
+
 \begin{enumerate}
-    \item \textbf{Split}：按指定列的值将数据分组
-    \item \textbf{Apply}：对每个组应用统计函数
-    \item \textbf{Combine}：将结果合并成新的DataFrame
+    \item \textbf{分组}：按指定列的值把数据分成多组
+    \item \textbf{应用}：对每组应用统计函数
+    \item \textbf{合并}：把各组结果合并成一个表格
 \end{enumerate}
 
-\textbf{常用聚合函数：}
+\textbf{常用统计函数：}
 \begin{itemize}
     \item \texttt{mean()}：平均值
     \item \texttt{sum()}：求和
     \item \texttt{count()}：计数
-    \item \texttt{max()} / \texttt{min()}：最大/最小值
+    \item \texttt{max()/min()}：最大/最小值
     \item \texttt{std()}：标准差
 \end{itemize}
 \end{knowledgebox}
@@ -1004,27 +1199,6 @@ print(product_stats.head(10))
 %========================================
 \section{综合实战：完整数据处理流程}
 %========================================
-
-\subsection{数据处理的完整流程}
-
-\begin{theorybox}[标准数据处理流程]
-一个完整的数据处理项目通常遵循以下流程：
-
-\begin{enumerate}
-    \item \textbf{数据读取}：从文件或数据库加载数据
-    \item \textbf{数据探索}：了解数据的基本情况
-    \item \textbf{数据清洗}：
-    \begin{itemize}
-        \item 处理缺失值
-        \item 处理重复值
-        \item 处理异常值
-        \item 格式转换
-    \end{itemize}
-    \item \textbf{特征工程}：创建新特征、转换现有特征
-    \item \textbf{数据分析}：统计分析、可视化
-    \item \textbf{结果保存}：保存清洗后的数据
-\end{enumerate}
-\end{theorybox}
 
 \subsection{案例：完整的电商订单数据处理}
 
