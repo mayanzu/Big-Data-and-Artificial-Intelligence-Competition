@@ -1,0 +1,1790 @@
+\documentclass[12pt,a4paper]{article}
+\usepackage[UTF8]{ctex}
+\usepackage{geometry}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{hyperref}
+\usepackage{booktabs}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{float}
+\usepackage{tcolorbox}
+\usepackage{enumitem}
+\usepackage{amssymb}
+
+% 页面设置
+\geometry{left=2.5cm,right=2.5cm,top=2.5cm,bottom=2.5cm}
+
+% 代码高亮设置
+\lstset{
+    language=Python,
+    basicstyle=\ttfamily\small,
+    keywordstyle=\color{blue}\bfseries,
+    commentstyle=\color{gray},
+    stringstyle=\color{orange},
+    numbers=left,
+    numberstyle=\tiny\color{gray},
+    stepnumber=1,
+    numbersep=8pt,
+    backgroundcolor=\color{gray!10},
+    frame=single,
+    frameround=fttt,
+    breaklines=true,
+    showstringspaces=false,
+    tabsize=4,
+    captionpos=b,
+    xleftmargin=2em,
+    xrightmargin=1em,
+    aboveskip=1em,
+    belowskip=1em
+}
+
+% 知识点框
+\tcbuselibrary{skins,breakable}
+\newtcolorbox{knowledgebox}[1][]{
+    colback=blue!5!white,
+    colframe=blue!50!black,
+    fonttitle=\bfseries,
+    title=#1,
+    breakable
+}
+
+% 练习框
+\newtcolorbox{practicebox}[1][]{
+    colback=green!5!white,
+    colframe=green!50!black,
+    fonttitle=\bfseries,
+    title=#1,
+    breakable
+}
+
+% 注意框
+\newtcolorbox{tipbox}[1][]{
+    colback=yellow!10!white,
+    colframe=orange!70!black,
+    fonttitle=\bfseries,
+    title=#1,
+    breakable
+}
+
+% 超链接设置
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    filecolor=magenta,      
+    urlcolor=cyan,
+    bookmarks=true,
+    pdfstartview=FitH
+}
+
+% 标题设置
+\title{\textbf{Pandas入门与数据处理实战手册}\\[0.5em]\large 零基础入门版}
+\author{竞赛培训组}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+\tableofcontents
+\newpage
+
+%========================================
+\section{Python基础入门}
+%========================================
+
+\subsection{什么是Python？}
+
+\begin{knowledgebox}[知识点：Python是什么]
+Python是一种\textbf{编程语言}，就像中文、英语是人类交流的语言一样，Python是人和计算机交流的语言。
+
+\textbf{Python的特点：}
+\begin{itemize}
+    \item \textbf{简单易学}：语法接近自然语言，适合初学者
+    \item \textbf{功能强大}：可以做数据分析、网站开发、人工智能等
+    \item \textbf{应用广泛}：大数据、机器学习、自动化办公等领域都在用
+\end{itemize}
+
+\textbf{为什么要学Python？}
+\begin{itemize}
+    \item 数据处理必备技能
+    \item 竞赛中必须使用的工具
+    \item 就业市场需求大
+\end{itemize}
+\end{knowledgebox}
+
+\subsection{安装Python}
+
+在使用Pandas之前，需要先安装Python。
+
+\textbf{步骤：}
+\begin{enumerate}
+    \item 访问官网：\url{https://www.python.org/downloads/}
+    \item 下载最新版本的Python（建议3.8或以上）
+    \item 运行安装程序，\textbf{一定要勾选"Add Python to PATH"}
+    \item 点击"Install Now"完成安装
+\end{enumerate}
+
+\begin{tipbox}[安装注意事项]
+\begin{itemize}
+    \item 安装时务必勾选"Add Python to PATH"，否则后面会有问题
+    \item 如果已经安装了Python，可以跳过这一步
+    \item 安装完成后，重启电脑确保环境变量生效
+\end{itemize}
+\end{tipbox}
+
+\subsection{验证Python安装}
+
+安装完成后，验证一下是否安装成功：
+
+\begin{enumerate}
+    \item 按\texttt{Win + R}键，输入\texttt{cmd}，回车打开命令行
+    \item 输入以下命令：
+\begin{verbatim}
+python --version
+\end{verbatim}
+    \item 如果显示版本号（如\texttt{Python 3.9.0}），说明安装成功
+\end{enumerate}
+
+\subsection{Python基础语法}
+
+\subsubsection{变量和数据类型}
+
+\begin{knowledgebox}[知识点：什么是变量？]
+变量就像是给数据起个名字，方便我们以后使用。
+
+\textbf{类比理解：}
+\begin{itemize}
+    \item 变量名 = 标签
+    \item 变量值 = 盒子里的东西
+\end{itemize}
+
+比如：\texttt{age = 20}，就是把数字20放进一个叫\texttt{age}的盒子里。
+\end{knowledgebox}
+
+\begin{lstlisting}[caption={变量示例}]
+# 定义变量（给数据起名字）
+name = "张三"      # 字符串（文字）
+age = 20          # 整数（数字）
+height = 1.75     # 浮点数（小数）
+is_student = True # 布尔值（真/假）
+
+# 打印变量
+print(name)
+print(age)
+print(height)
+print(is_student)
+\end{lstlisting}
+
+\textbf{Python常用数据类型：}
+
+\begin{table}[H]
+\centering
+\caption{Python数据类型}
+\begin{tabular}{|l|l|l|}
+\hline
+\textbf{类型} & \textbf{说明} & \textbf{示例} \\
+\hline
+int & 整数 & 20, 100, -5 \\
+\hline
+float & 浮点数（小数） & 1.75, 3.14 \\
+\hline
+str & 字符串（文字） & "张三", "hello" \\
+\hline
+bool & 布尔值（真/假） & True, False \\
+\hline
+list & 列表（一组数据） & [1, 2, 3] \\
+\hline
+dict & 字典（键值对） & \{"name": "张三"\} \\
+\hline
+\end{tabular}
+\end{table}
+
+\subsubsection{列表（List）}
+
+\begin{knowledgebox}[知识点：什么是列表？]
+列表就是一组数据的集合，用方括号\texttt{[]}表示。
+
+\textbf{类比理解：}
+\begin{itemize}
+    \item 列表 = 购物清单、成绩单、通讯录
+    \item 可以存放多个数据
+    \item 数据之间有顺序
+\end{itemize}
+\end{knowledgebox}
+
+\begin{lstlisting}[caption={列表示例}]
+# 创建一个列表
+scores = [85, 92, 78, 90, 88]
+names = ["张三", "李四", "王五"]
+
+# 访问列表元素（索引从0开始）
+print(scores[0])    # 第一个元素：85
+print(scores[1])    # 第二个元素：92
+print(names[2])     # 第三个元素：王五
+
+# 获取列表长度
+print(len(scores))  # 5
+
+# 添加元素
+scores.append(95)   # 在末尾添加95
+\end{lstlisting}
+
+\subsubsection{字典（Dictionary）}
+
+\begin{knowledgebox}[知识点：什么是字典？]
+字典是一种键值对的数据结构，用花括号\texttt{\{\}}表示。
+
+\textbf{类比理解：}
+\begin{itemize}
+    \item 字典 = 真实字典（查词找释义）
+    \item 键（key）= 要查的词
+    \item 值（value）= 词的释义
+\end{itemize}
+\end{knowledgebox}
+
+\begin{lstlisting}[caption={字典示例}]
+# 创建一个字典
+student = {
+    "name": "张三",
+    "age": 20,
+    "score": 85
+}
+
+# 访问字典元素
+print(student["name"])   # 张三
+print(student["age"])    # 20
+
+# 修改值
+student["score"] = 90
+
+# 添加新键值对
+student["gender"] = "男"
+\end{lstlisting}
+
+\subsubsection{条件判断（if语句）}
+
+\begin{lstlisting}[caption={条件判断示例}]
+# 条件判断
+age = 18
+
+if age >= 18:
+    print("成年人")
+else:
+    print("未成年人")
+
+# 多条件判断
+score = 85
+
+if score >= 90:
+    print("优秀")
+elif score >= 80:
+    print("良好")
+elif score >= 60:
+    print("及格")
+else:
+    print("不及格")
+\end{lstlisting}
+
+\begin{knowledgebox}[知识点：条件判断的语法]
+\begin{itemize}
+    \item \texttt{if}：如果条件成立
+    \item \texttt{elif}：否则如果（可以有多个）
+    \item \texttt{else}：否则（前面都不成立时执行）
+    \item \textbf{注意}：Python用\textbf{缩进}表示代码块，不是大括号
+\end{itemize}
+\end{knowledgebox}
+
+\subsubsection{循环（for循环）}
+
+\begin{lstlisting}[caption={循环示例}]
+# 遍历列表
+scores = [85, 92, 78, 90]
+
+for score in scores:
+    print(score)
+
+# 遍历范围
+for i in range(5):      # 0, 1, 2, 3, 4
+    print(i)
+
+# 遍历字典
+student = {"name": "张三", "age": 20}
+
+for key, value in student.items():
+    print(f"{key}: {value}")
+\end{lstlisting}
+
+\subsubsection{函数（Function）}
+
+\begin{knowledgebox}[知识点：什么是函数？]
+函数就是一段可以重复使用的代码块。
+
+\textbf{类比理解：}
+\begin{itemize}
+    \item 函数 = 洗衣机、电饭煲（封装好的功能）
+    \item 输入 = 脏衣服、米（参数）
+    \item 输出 = 干净衣服、米饭（返回值）
+\end{itemize}
+
+\textbf{好处：}
+\begin{itemize}
+    \item 避免重复写代码
+    \item 代码更清晰
+    \item 便于维护
+\end{itemize}
+\end{knowledgebox}
+
+\begin{lstlisting}[caption={函数示例}]
+# 定义函数
+def greet(name):
+    """打招呼函数"""
+    return f"你好，{name}！"
+
+# 调用函数
+result = greet("张三")
+print(result)    # 你好，张三！
+
+# 带多个参数的函数
+def calculate_total(price, quantity):
+    """计算总价"""
+    return price * quantity
+
+# 调用函数
+total = calculate_total(100, 3)
+print(total)     # 300
+\end{lstlisting}
+
+\begin{practicebox}[动手练习：Python基础]
+完成以下练习，巩固Python基础：
+
+\textbf{练习1：变量和类型}
+\begin{lstlisting}
+# 创建变量
+name = "你的名字"
+age = 你的年龄
+height = 你的身高
+
+# 打印这些信息
+print(f"姓名：{name}")
+print(f"年龄：{age}")
+print(f"身高：{height}米")
+\end{lstlisting}
+
+\textbf{练习2：列表操作}
+\begin{lstlisting}
+# 创建一个成绩列表
+scores = [78, 85, 92, 67, 88]
+
+# 计算平均分
+total = sum(scores)
+count = len(scores)
+average = total / count
+
+print(f"总分：{total}")
+print(f"平均分：{average}")
+\end{lstlisting}
+
+\textbf{练习3：条件判断}
+\begin{lstlisting}
+# 判断成绩等级
+score = 85
+
+if score >= 90:
+    level = "优秀"
+elif score >= 80:
+    level = "良好"
+elif score >= 60:
+    level = "及格"
+else:
+    level = "不及格"
+
+print(f"成绩等级：{level}")
+\end{lstlisting}
+\end{practicebox}
+
+%========================================
+\section{准备工作：安装与导入}
+%========================================
+
+\subsection{什么是Pandas？}
+
+\begin{knowledgebox}[知识点：Pandas是什么]
+Pandas是Python的一个数据分析库，它的名字来源于"Panel Data"（面板数据）。
+
+简单来说，Pandas就是用来处理表格数据的工具，就像Excel一样，但比Excel更强大、更灵活。
+
+\textbf{为什么叫Pandas？}
+\begin{itemize}
+    \item 和熊猫（panda）没有关系
+    \item 来自计量经济学的"Panel Data"概念
+    \item 是Python Data Analysis的缩写
+\end{itemize}
+\end{knowledgebox}
+
+\subsection{安装Pandas}
+
+在使用Pandas之前，需要先安装它。打开命令行（CMD或PowerShell），输入以下命令：
+
+\begin{lstlisting}[caption={安装Pandas}]
+# 使用pip安装（推荐）
+pip install pandas
+
+# 如果安装了Anaconda，使用conda安装
+conda install pandas
+\end{lstlisting}
+
+\begin{tipbox}[安装小贴士]
+\begin{itemize}
+    \item 安装时需要联网
+    \item 如果安装速度慢，可以使用国内镜像源
+    \item 安装完成后，关闭命令行重新打开
+\end{itemize}
+\end{tipbox}
+
+\subsection{导入Pandas}
+
+安装完成后，在Python代码中导入Pandas：
+
+\begin{lstlisting}[caption={导入Pandas}]
+# 导入pandas库，并给它起别名pd
+import pandas as pd
+
+# 同时导入numpy（经常和pandas一起使用）
+import numpy as np
+\end{lstlisting}
+
+\begin{knowledgebox}[知识点：为什么要用别名？]
+在Python中，给库起别名是为了：
+\begin{enumerate}
+    \item \textbf{简化代码}：写\texttt{pd}比写\texttt{pandas}更短
+    \item \textbf{行业惯例}：大家都用\texttt{pd}，方便阅读
+    \item \textbf{保持一致}：不同人写的代码风格统一
+\end{enumerate}
+
+这就好比：
+\begin{itemize}
+    \item 你的名字叫"张三丰"，但朋友们叫你"小张"
+    \item 写代码时，\texttt{pandas}是全名，\texttt{pd}是小名
+\end{itemize}
+\end{knowledgebox}
+
+%========================================
+\section{Pandas的核心概念}
+%========================================
+
+\subsection{DataFrame：数据表格}
+
+\begin{knowledgebox}[知识点：什么是DataFrame？]
+DataFrame是Pandas中最重要的数据结构，你可以把它想象成一张Excel表格：
+
+\begin{itemize}
+    \item 有行和列
+    \item 每列可以是不同的数据类型（数字、文字、日期等）
+    \item 有列名（表头）
+    \item 每行有一个索引（行号）
+\end{itemize}
+
+\textbf{类比理解：}
+\begin{itemize}
+    \item Excel表格 $\rightarrow$ DataFrame
+    \item 工作表 $\rightarrow$ DataFrame
+    \item 数据库表 $\rightarrow$ DataFrame
+\end{itemize}
+\end{knowledgebox}
+
+\subsection{创建第一个DataFrame}
+
+让我们创建一个简单的学生成绩表：
+
+\begin{lstlisting}[caption={创建DataFrame}]
+import pandas as pd
+
+# 创建一个字典（dict），存储数据
+data = {
+    '姓名': ['张三', '李四', '王五'],
+    '数学': [85, 92, 78],
+    '英语': [88, 85, 92]
+}
+
+# 用字典创建DataFrame
+df = pd.DataFrame(data)
+
+# 显示DataFrame
+print(df)
+\end{lstlisting}
+
+运行结果：
+\begin{verbatim}
+   姓名  数学  英语
+0  张三   85   88
+1  李四   92   85
+2  王五   78   92
+\end{verbatim}
+
+\begin{knowledgebox}[知识点：代码拆解]
+让我们逐行理解上面的代码：
+
+\begin{enumerate}
+    \item \texttt{data = \{...\}}：创建一个字典
+    \begin{itemize}
+        \item 字典的键（'姓名'、'数学'）变成列名
+        \item 字典的值（列表）变成列的数据
+    \end{itemize}
+    
+    \item \texttt{pd.DataFrame(data)}：把字典转换成DataFrame
+    
+    \item \texttt{print(df)}：显示表格内容
+    \begin{itemize}
+        \item 最左边一列0、1、2是\textbf{行索引}（默认从0开始）
+        \item 上面一行是\textbf{列名}
+    \end{itemize}
+\end{enumerate}
+\end{knowledgebox}
+
+\begin{practicebox}[动手练习1]
+试着创建一个包含以下信息的DataFrame：
+\begin{itemize}
+    \item 3个商品：手机、电脑、耳机
+    \item 每个商品有：名称、价格、库存数量
+\end{itemize}
+
+\textbf{参考代码：}
+\begin{lstlisting}
+import pandas as pd
+
+data = {
+    '商品名称': ['手机', '电脑', '耳机'],
+    '价格': [2999, 5999, 199],
+    '库存': [100, 50, 200]
+}
+
+df = pd.DataFrame(data)
+print(df)
+\end{lstlisting}
+\end{practicebox}
+
+%========================================
+\section{读取数据文件}
+%========================================
+
+\subsection{为什么要从文件读取数据？}
+
+在实际工作中，数据通常存储在文件中，而不是直接写在代码里。常见的数据文件格式有：
+
+\begin{itemize}
+    \item \textbf{CSV文件}（.csv）：逗号分隔的值，最常用
+    \item \textbf{Excel文件}（.xlsx）：Excel表格
+    \item \textbf{JSON文件}（.json）：网页数据常用格式
+\end{itemize}
+
+\subsection{读取CSV文件}
+
+CSV（Comma-Separated Values）是最常见的数据格式。假设我们有一个文件\texttt{学生成绩.csv}：
+
+\begin{lstlisting}[caption={读取CSV文件}]
+import pandas as pd
+
+# 读取CSV文件
+df = pd.read_csv('学生成绩.csv')
+
+# 显示前5行
+print(df.head())
+\end{lstlisting}
+
+\begin{knowledgebox}[知识点：read\_csv常用参数]
+\texttt{pd.read\_csv()}有很多参数，常用的有：
+
+\begin{itemize}
+    \item \texttt{encoding='utf-8'}：指定文件编码（处理中文）
+    \item \texttt{sep=','}：指定分隔符（默认是逗号）
+    \item \texttt{header=0}：指定第几行是列名（默认第0行）
+\end{itemize}
+
+\textbf{示例：}
+\begin{lstlisting}
+# 读取中文CSV文件（防止乱码）
+df = pd.read_csv('学生成绩.csv', encoding='utf-8')
+
+# 读取用制表符分隔的文件
+df = pd.read_csv('数据.txt', sep='\t')
+\end{lstlisting}
+\end{knowledgebox}
+
+\begin{tipbox}[中文乱码怎么办？]
+如果读取后中文显示乱码，尝试以下编码：
+\begin{itemize}
+    \item \texttt{encoding='utf-8'}：最常用的编码
+    \item \texttt{encoding='gbk'}：中文Windows系统常用
+    \item \texttt{encoding='gb2312'}：简体中文编码
+\end{itemize}
+\end{tipbox}
+
+\subsection{查看数据基本信息}
+
+读取数据后，首先要了解数据的基本情况：
+
+\begin{lstlisting}[caption={查看数据信息}]
+# 查看数据形状（行数，列数）
+print(df.shape)
+
+# 查看列名
+print(df.columns)
+
+# 查看数据类型
+print(df.dtypes)
+
+# 查看基本信息（包括非空值数量）
+print(df.info())
+
+# 查看统计摘要（只针对数值列）
+print(df.describe())
+\end{lstlisting}
+
+\begin{knowledgebox}[知识点：这些方法的作用]
+\begin{itemize}
+    \item \texttt{shape}：返回\texttt{(行数, 列数)}，比如\texttt{(100, 5)}表示100行5列
+    \item \texttt{columns}：返回所有列名
+    \item \texttt{dtypes}：返回每列的数据类型
+    \item \texttt{info()}：显示详细信息，包括每列的非空值数量
+    \item \texttt{describe()}：统计数值列的计数、均值、最值等
+\end{itemize}
+\end{knowledgebox}
+
+\begin{practicebox}[动手练习2]
+使用提供的\texttt{01\_电商订单数据\_练习.csv}文件：
+
+\begin{enumerate}
+    \item 读取这个CSV文件
+    \item 查看数据有多少行、多少列
+    \item 查看所有列名
+    \item 查看每列的数据类型
+\end{enumerate}
+
+\textbf{参考代码：}
+\begin{lstlisting}
+import pandas as pd
+
+# 读取数据
+df = pd.read_csv('01_电商订单数据_练习.csv')
+
+# 查看形状
+print("数据形状:", df.shape)
+
+# 查看列名
+print("\n列名:")
+print(df.columns)
+
+# 查看数据类型
+print("\n数据类型:")
+print(df.dtypes)
+\end{lstlisting}
+\end{practicebox}
+
+%========================================
+\section{数据选择：如何选取需要的数据}
+%========================================
+
+\subsection{选择列}
+
+有时候我们只需要表格中的某些列，而不是全部。
+
+\subsubsection{选择单列}
+
+\begin{lstlisting}[caption={选择单列}]
+# 选择'姓名'这一列
+names = df['姓名']
+
+# 或者使用点号（仅适用于列名没有空格和特殊字符时）
+names = df.姓名
+\end{lstlisting}
+
+\begin{knowledgebox}[知识点：单列选择的结果]
+选择单列后，得到的是一个\textbf{Series}（序列），不是DataFrame。
+
+\textbf{Series和DataFrame的区别：}
+\begin{itemize}
+    \item DataFrame：二维表格（有行有列）
+    \item Series：一维数组（只有一列数据）
+\end{itemize}
+\end{knowledgebox}
+
+\subsubsection{选择多列}
+
+\begin{lstlisting}[caption={选择多列}]
+# 选择多列（用两个方括号）
+subset = df[['姓名', '数学']]
+
+# 注意：外层[]是DataFrame的索引，内层[]是Python列表
+\end{lstlisting}
+
+\begin{tipbox}[注意双括号]
+选择多列时，需要用\textbf{两个方括号}：
+\begin{itemize}
+    \item 外层\texttt{[]}：DataFrame的列选择
+    \item 内层\texttt{[]}：Python的列表，包含要选的列名
+\end{itemize}
+
+\textbf{常见错误：}
+\begin{lstlisting}
+# 错误！只用一个方括号
+df['姓名', '数学']  # 会报错
+
+# 正确！用两个方括号
+df[['姓名', '数学']]  # OK
+\end{lstlisting}
+\end{tipbox}
+
+\subsection{选择行}
+
+Pandas提供了两种选择行的方法：
+
+\begin{knowledgebox}[知识点：loc vs iloc]
+\begin{itemize}
+    \item \texttt{loc}：按\textbf{标签}选择（用行名）
+    \item \texttt{iloc}：按\textbf{位置}选择（用行号，从0开始）
+\end{itemize}
+
+\textbf{类比：}
+\begin{itemize}
+    \item \texttt{loc}就像用姓名找人
+    \item \texttt{iloc}就像用学号找人（第1个、第2个...）
+\end{itemize}
+\end{knowledgebox}
+
+\subsubsection{使用iloc选择行}
+
+\begin{lstlisting}[caption={使用iloc选择行}]
+# 选择第1行（索引为0）
+row = df.iloc[0]
+
+# 选择前3行
+rows = df.iloc[0:3]
+
+# 选择第1、3、5行
+rows = df.iloc[[0, 2, 4]]
+\end{lstlisting}
+
+\subsubsection{使用loc选择行}
+
+\begin{lstlisting}[caption={使用loc选择行}]
+# 假设行索引是姓名
+df_indexed = df.set_index('姓名')
+
+# 选择姓名为'张三'的行
+row = df_indexed.loc['张三']
+
+# 选择多个人的数据
+rows = df_indexed.loc[['张三', '李四']]
+\end{lstlisting}
+
+\subsection{同时选择行和列}
+
+\begin{lstlisting}[caption={同时选择行和列}]
+# iloc[行位置, 列位置]
+# 选择前3行，前2列
+data = df.iloc[0:3, 0:2]
+
+# loc[行标签, 列标签]
+# 选择'张三'和'李四'的'数学'和'英语'成绩
+data = df_indexed.loc[['张三', '李四'], ['数学', '英语']]
+\end{lstlisting}
+
+\begin{practicebox}[动手练习3]
+使用\texttt{01\_电商订单数据\_练习.csv}：
+
+\begin{enumerate}
+    \item 只选择\texttt{product\_name}和\texttt{price}两列
+    \item 选择前10行数据
+    \item 选择第5到第15行的\texttt{order\_id}、\texttt{user\_id}、\texttt{quantity}三列
+\end{enumerate}
+
+\textbf{参考代码：}
+\begin{lstlisting}
+import pandas as pd
+
+df = pd.read_csv('01_电商订单数据_练习.csv')
+
+# 1. 选择两列
+product_info = df[['product_name', 'price']]
+print(product_info.head())
+
+# 2. 选择前10行
+first_10 = df.iloc[0:10]
+print(first_10)
+
+# 3. 选择特定行和列
+subset = df.iloc[4:15][['order_id', 'user_id', 'quantity']]
+print(subset)
+\end{lstlisting}
+\end{practicebox}
+
+%========================================
+\section{数据清洗：处理脏数据}
+%========================================
+
+\subsection{什么是脏数据？}
+
+\begin{knowledgebox}[知识点：常见的数据质量问题]
+真实世界的数据往往存在各种问题，我们称之为"脏数据"：
+
+\begin{enumerate}
+    \item \textbf{缺失值}：某些单元格是空的
+    \item \textbf{重复值}：同样的数据出现多次
+    \item \textbf{异常值}：明显不合理的数据（如年龄为-5）
+    \item \textbf{格式不一致}：日期格式混乱、大小写不统一
+    \item \textbf{类型错误}：数字被存成了文字
+\end{enumerate}
+\end{knowledgebox}
+
+\subsection{处理缺失值}
+
+\subsubsection{识别缺失值}
+
+\begin{lstlisting}[caption={检查缺失值}]
+# 检查每列的缺失值数量
+print(df.isnull().sum())
+
+# 检查缺失值比例
+missing_ratio = df.isnull().sum() / len(df) * 100
+print(missing_ratio)
+\end{lstlisting}
+
+\begin{knowledgebox}[知识点：isnull()的作用]
+\texttt{isnull()}方法会返回一个和原表格一样大的表格，里面只有True和False：
+\begin{itemize}
+    \item True：表示这个单元格是缺失值
+    \item False：表示这个单元格有数据
+\end{itemize}
+
+\texttt{sum()}会把True当成1、False当成0，所以能统计出每列的缺失值数量。
+\end{knowledgebox}
+
+\subsubsection{填充缺失值}
+
+有几种常见的填充策略：
+
+\begin{lstlisting}[caption={填充缺失值的方法}]
+# 方法1：用固定值填充
+df['年龄'] = df['年龄'].fillna(0)
+
+# 方法2：用平均值填充（适合数值列）
+df['成绩'] = df['成绩'].fillna(df['成绩'].mean())
+
+# 方法3：用中位数填充（适合有异常值的情况）
+df['工资'] = df['工资'].fillna(df['工资'].median())
+
+# 方法4：用众数填充（适合类别数据）
+df['性别'] = df['性别'].fillna(df['性别'].mode()[0])
+
+# 方法5：用前一个值填充（适合时间序列）
+df['温度'] = df['温度'].fillna(method='ffill')
+\end{lstlisting}
+
+\begin{tipbox}[选择填充策略的建议]
+\begin{itemize}
+    \item \textbf{数值数据}：优先用中位数（对异常值不敏感）
+    \item \textbf{类别数据}：用众数（出现次数最多的值）
+    \item \textbf{时间序列}：用前后值填充（保持趋势）
+    \item \textbf{缺失太多}（如超过50\%）：考虑删除该列
+\end{itemize}
+\end{tipbox}
+
+\subsubsection{删除缺失值}
+
+如果缺失值很少，可以直接删除：
+
+\begin{lstlisting}[caption={删除缺失值}]
+# 删除包含缺失值的行
+df_clean = df.dropna()
+
+# 只删除某列有缺失值的行
+df_clean = df.dropna(subset=['年龄'])
+
+# 删除整列都是缺失值的列
+df_clean = df.dropna(axis=1, how='all')
+\end{lstlisting}
+
+\begin{practicebox}[动手练习4]
+使用\texttt{03\_缺失值处理\_练习.csv}：
+
+\begin{enumerate}
+    \item 统计每列的缺失值数量
+    \item 用中位数填充\texttt{salary}列的缺失值
+    \item 用众数填充\texttt{department}列的缺失值
+    \item 删除\texttt{score}列仍有缺失值的行
+\end{enumerate}
+
+\textbf{参考代码：}
+\begin{lstlisting}
+import pandas as pd
+
+df = pd.read_csv('03_缺失值处理_练习.csv')
+
+# 1. 统计缺失值
+print("缺失值统计:")
+print(df.isnull().sum())
+
+# 2. 用中位数填充工资
+median_salary = df['salary'].median()
+df['salary'] = df['salary'].fillna(median_salary)
+print(f"\n用 {median_salary} 填充工资缺失值")
+
+# 3. 用众数填充部门
+mode_dept = df['department'].mode()[0]
+df['department'] = df['department'].fillna(mode_dept)
+print(f"用 '{mode_dept}' 填充部门缺失值")
+
+# 4. 删除score仍有缺失的行
+df = df.dropna(subset=['score'])
+print(f"\n删除后剩余 {len(df)} 行")
+\end{lstlisting}
+\end{practicebox}
+
+\subsection{处理重复值}
+
+\begin{lstlisting}[caption={处理重复值}]
+# 检查重复值
+duplicates = df.duplicated()
+print(f"有 {duplicates.sum()} 行重复")
+
+# 查看重复的行
+duplicate_rows = df[df.duplicated(keep=False)]
+print(duplicate_rows)
+
+# 删除重复值（保留第一个）
+df_clean = df.drop_duplicates()
+
+# 基于特定列删除重复
+df_clean = df.drop_duplicates(subset=['姓名'])
+\end{lstlisting}
+
+\subsection{处理异常值}
+
+\subsubsection{什么是异常值？}
+
+异常值是指明显偏离正常范围的数据，比如：
+\begin{itemize}
+    \item 年龄为负数或超过150
+    \item 价格为0或异常高
+    \item 数量为负数
+\end{itemize}
+
+\subsubsection{检测异常值}
+
+\begin{lstlisting}[caption={使用IQR方法检测异常值}]
+# IQR（四分位距）方法
+def detect_outliers_iqr(data):
+    Q1 = data.quantile(0.25)  # 第25百分位数
+    Q3 = data.quantile(0.75)  # 第75百分位数
+    IQR = Q3 - Q1
+    
+    # 异常值范围
+    lower_bound = Q1 - 1.5 * IQR
+    upper_bound = Q3 + 1.5 * IQR
+    
+    # 找出异常值
+    outliers = data[(data < lower_bound) | (data > upper_bound)]
+    return outliers
+
+# 检测价格的异常值
+price_outliers = detect_outliers_iqr(df['price'])
+print(f"发现 {len(price_outliers)} 个价格异常值")
+\end{lstlisting}
+
+\begin{knowledgebox}[知识点：IQR方法原理]
+IQR（Interquartile Range，四分位距）是一种稳健的异常值检测方法：
+
+\begin{enumerate}
+    \item 把数据从小到大排序
+    \item 找到第25\%位置的数（Q1）和第75\%位置的数（Q3）
+    \item 计算IQR = Q3 - Q1
+    \item 正常数据范围：[Q1 - 1.5×IQR, Q3 + 1.5×IQR]
+    \item 超出这个范围的就是异常值
+\end{enumerate}
+
+\textbf{优点}：不受极端值影响，适合偏态分布的数据
+\end{knowledgebox}
+
+\subsubsection{处理异常值}
+
+找到异常值后，有几种处理方式：
+
+\begin{lstlisting}[caption={处理异常值的方法}]
+# 方法1：删除异常值
+df_clean = df[(df['price'] >= lower_bound) & (df['price'] <= upper_bound)]
+
+# 方法2：用边界值替换（截断）
+df['price'] = df['price'].clip(lower=lower_bound, upper=upper_bound)
+
+# 方法3：用中位数替换
+median_price = df['price'].median()
+df.loc[df['price'] > upper_bound, 'price'] = median_price
+\end{lstlisting}
+
+%========================================
+\section{数据转换与格式化}
+%========================================
+
+\subsection{数据类型转换}
+
+\begin{lstlisting}[caption={转换数据类型}]
+# 查看当前数据类型
+print(df.dtypes)
+
+# 转换为整数
+df['年龄'] = df['年龄'].astype(int)
+
+# 转换为浮点数
+df['价格'] = df['价格'].astype(float)
+
+# 转换为字符串
+df['编号'] = df['编号'].astype(str)
+
+# 转换为日期时间
+df['日期'] = pd.to_datetime(df['日期'])
+\end{lstlisting}
+
+\subsection{字符串处理}
+
+\begin{lstlisting}[caption={常用字符串方法}]
+# 去除空格
+df['姓名'] = df['姓名'].str.strip()
+
+# 转换大小写
+df['邮箱'] = df['邮箱'].str.lower()
+
+# 替换字符
+df['电话'] = df['电话'].str.replace('-', '')
+
+# 提取子串
+df['年份'] = df['日期'].str[0:4]
+
+# 分割字符串
+df['姓名'].str.split(' ', expand=True)
+\end{lstlisting}
+
+\begin{knowledgebox}[知识点：str访问器]
+在Pandas中，要对字符串列进行操作，需要使用\texttt{.str}访问器：
+
+\begin{itemize}
+    \item \texttt{df['列名'].str.方法()}
+    \item 不能直接写\texttt{df['列名'].strip()}
+\end{itemize}
+
+这就像打开一个工具箱，\texttt{.str}就是打开字符串工具箱的钥匙。
+\end{knowledgebox}
+
+\subsection{应用函数}
+
+有时候需要对数据进行复杂的转换，可以自定义函数：
+
+\begin{lstlisting}[caption={使用apply应用函数}]
+# 定义一个函数
+def score_level(score):
+    if score >= 90:
+        return '优秀'
+    elif score >= 80:
+        return '良好'
+    elif score >= 60:
+        return '及格'
+    else:
+        return '不及格'
+
+# 应用到整列
+df['等级'] = df['成绩'].apply(score_level)
+
+# 使用lambda函数（简单操作）
+df['价格_打折'] = df['价格'].apply(lambda x: x * 0.8)
+\end{lstlisting}
+
+\begin{practicebox}[动手练习5]
+使用\texttt{04\_数据格式清洗\_练习.csv}：
+
+\begin{enumerate}
+    \item 去除\texttt{name}列的前后空格
+    \item 将\texttt{income}列中的"k"替换为"000"，并转换为数值
+    \item 从\texttt{birth\_date}列中提取年份
+\end{enumerate}
+
+\textbf{参考代码：}
+\begin{lstlisting}
+import pandas as pd
+
+df = pd.read_csv('04_数据格式清洗_练习.csv')
+
+# 1. 去除空格
+df['name'] = df['name'].str.strip()
+
+# 2. 处理收入（将12k转换为12000）
+def convert_income(income_str):
+    income_str = str(income_str)
+    if 'k' in income_str.lower():
+        number = float(income_str.lower().replace('k', ''))
+        return number * 1000
+    else:
+        return float(income_str)
+
+df['income_num'] = df['income'].apply(convert_income)
+
+# 3. 提取年份
+df['birth_year'] = df['birth_date'].str[0:4]
+
+print(df[['name', 'income', 'income_num', 'birth_year']].head())
+\end{lstlisting}
+\end{practicebox}
+
+%========================================
+\section{数据分组与统计}
+%========================================
+
+\subsection{分组统计}
+
+\begin{knowledgebox}[知识点：分组统计的概念]
+分组统计就是：
+\begin{enumerate}
+    \item 先把数据按某个列分成若干组
+    \item 然后对每组进行统计计算
+\end{enumerate}
+
+\textbf{类比}：
+\begin{itemize}
+    \item 把全班同学按\textbf{性别}分组，计算每组平均成绩
+    \item 把商品按\textbf{类别}分组，计算每类总销量
+\end{itemize}
+\end{knowledgebox}
+
+\begin{lstlisting}[caption={分组统计}]
+# 按部门分组，计算平均工资
+dept_avg = df.groupby('部门')['工资'].mean()
+print(dept_avg)
+
+# 多列分组，多统计量
+df.groupby(['部门', '性别']).agg({
+    '工资': ['mean', 'max', 'min'],
+    '年龄': 'mean'
+})
+\end{lstlisting}
+
+\begin{knowledgebox}[知识点：groupby的工作流程]
+\texttt{groupby()}的工作流程就像流水线：
+
+\begin{enumerate}
+    \item \textbf{分组}：按指定列的值把数据分成多组
+    \item \textbf{应用}：对每组应用统计函数
+    \item \textbf{合并}：把各组结果合并成一个表格
+\end{enumerate}
+
+\textbf{常用统计函数：}
+\begin{itemize}
+    \item \texttt{mean()}：平均值
+    \item \texttt{sum()}：求和
+    \item \texttt{count()}：计数
+    \item \texttt{max()/min()}：最大/最小值
+    \item \texttt{std()}：标准差
+\end{itemize}
+\end{knowledgebox}
+
+%========================================
+\section{综合实战：完整的数据处理流程}
+%========================================
+
+\subsection{案例背景}
+
+假设我们有一个电商订单数据集，需要完成以下任务：
+\begin{enumerate}
+    \item 清洗数据（处理缺失值、重复值、异常值）
+    \item 转换数据格式（价格、日期、手机号）
+    \item 分析数据（统计各品类销售额）
+\end{enumerate}
+
+\subsection{分步实现}
+
+\begin{lstlisting}[caption={完整数据处理流程}]
+import pandas as pd
+import numpy as np
+
+# ========== 第1步：读取数据 ==========
+print("步骤1：读取数据")
+df = pd.read_csv('01_电商订单数据_练习.csv')
+print(f"原始数据：{df.shape[0]}行，{df.shape[1]}列")
+
+# ========== 第2步：查看数据质量 ==========
+print("\n步骤2：数据质量检查")
+print("缺失值统计：")
+print(df.isnull().sum())
+print(f"\n重复值：{df.duplicated().sum()}行")
+
+# ========== 第3步：处理重复值 ==========
+print("\n步骤3：删除重复值")
+df = df.drop_duplicates()
+print(f"删除后：{df.shape[0]}行")
+
+# ========== 第4步：处理缺失值 ==========
+print("\n步骤4：处理缺失值")
+# user_id缺失用'UNKNOWN'填充
+df['user_id'] = df['user_id'].fillna('UNKNOWN')
+
+# ========== 第5步：处理异常值 ==========
+print("\n步骤5：处理异常值")
+# 处理负数数量
+df.loc[df['quantity'] < 0, 'quantity'] = 1
+print("负数数量已修正为1")
+
+# ========== 第6步：格式转换 ==========
+print("\n步骤6：格式转换")
+# 提取价格数字
+df['price_num'] = df['price'].str.replace('元', '').astype(float)
+
+# 标准化手机号
+df['phone_clean'] = df['phone'].str.replace('-', '')
+
+# ========== 第7步：数据分析 ==========
+print("\n步骤7：数据分析")
+# 计算订单金额
+df['total_amount'] = df['price_num'] * df['quantity']
+
+# 按商品统计
+product_stats = df.groupby('product_name').agg({
+    'total_amount': 'sum',
+    'quantity': 'sum'
+}).sort_values('total_amount', ascending=False)
+
+print("\n销售额TOP5商品：")
+print(product_stats.head())
+
+# ========== 第8步：保存结果 ==========
+print("\n步骤8：保存结果")
+df.to_csv('清洗后数据.csv', index=False)
+print("数据已保存到：清洗后数据.csv")
+\end{lstlisting}
+
+%========================================
+\section{竞赛模拟题}
+%========================================
+
+\subsection{题目一：电商订单数据处理}
+
+\begin{practicebox}[竞赛模拟题1]
+\textbf{题目要求：}
+
+使用\texttt{01\_电商订单数据\_练习.csv}，完成以下任务：
+
+\begin{enumerate}
+    \item 读取数据，查看基本信息
+    \item 删除重复订单
+    \item 处理user\_id缺失值（用'UNKNOWN'填充）
+    \item 处理负数数量（修正为1）
+    \item 提取价格中的数字，转换为数值型
+    \item 标准化手机号格式（去除横线）
+    \item 计算每个订单的总金额（价格×数量）
+    \item 统计每个商品的总销售额
+    \item 保存清洗后的数据
+\end{enumerate}
+
+\textbf{输出要求：}
+\begin{itemize}
+    \item 清洗后的数据文件
+    \item 数据统计报告（包含处理记录和统计结果）
+\end{itemize}
+\end{practicebox}
+
+\subsection{题目二：员工信息数据处理}
+
+\begin{practicebox}[竞赛模拟题2]
+\textbf{题目要求：}
+
+使用\texttt{03\_缺失值处理\_练习.csv}和\texttt{04\_数据格式清洗\_练习.csv}，完成以下任务：
+
+\begin{enumerate}
+    \item 读取两个CSV文件
+    \item 处理缺失值：
+    \begin{itemize}
+        \item age：用中位数填充
+        \item salary：用平均值填充
+        \item department：用众数填充
+    \end{itemize}
+    \item 格式标准化：
+    \begin{itemize}
+        \item 姓名：去除前后空格
+        \item 收入：统一转换为数值（处理"k"单位）
+    \end{itemize}
+    \item 按部门统计平均工资和年龄
+    \item 保存处理后的数据
+\end{enumerate}
+\end{practicebox}
+
+\subsection{题目一参考答案}
+
+\begin{practicebox}[竞赛模拟题1 - 完整解答]
+
+\textbf{解题思路：}
+
+这道题要求我们对电商订单数据进行全面清洗和分析。按照数据处理的正常流程，我们应该：
+\begin{enumerate}
+    \item 先读取数据，了解数据的基本情况
+    \item 处理数据质量问题（重复、缺失、异常）
+    \item 进行格式转换
+    \item 进行数据分析
+    \item 保存结果
+\end{enumerate}
+
+\textbf{完整代码：}
+
+\begin{lstlisting}[caption={电商订单数据处理完整解答}]
+import pandas as pd
+import numpy as np
+
+# ========== 第1步：读取数据 ==========
+print("=" * 50)
+print("步骤1：读取数据")
+print("=" * 50)
+
+df = pd.read_csv('01_电商订单数据_练习.csv')
+print(f"数据形状：{df.shape}")
+print(f"\n列名：{df.columns.tolist()}")
+print("\n前5行数据：")
+print(df.head())
+
+# ========== 第2步：删除重复值 ==========
+print("\n" + "=" * 50)
+print("步骤2：删除重复值")
+print("=" * 50)
+
+# 查看重复值
+n_duplicates = df.duplicated().sum()
+print(f"发现 {n_duplicates} 行重复数据")
+
+# 删除重复值
+df = df.drop_duplicates()
+print(f"删除后剩余 {len(df)} 行")
+
+# ========== 第3步：处理缺失值 ==========
+print("\n" + "=" * 50)
+print("步骤3：处理缺失值")
+print("=" * 50)
+
+# 查看缺失值
+print("缺失值统计：")
+print(df.isnull().sum())
+
+# 填充user_id缺失值
+df['user_id'] = df['user_id'].fillna('UNKNOWN')
+print("\nuser_id缺失值已用'UNKNOWN'填充")
+
+# ========== 第4步：处理异常值 ==========
+print("\n" + "=" * 50)
+print("步骤4：处理异常值")
+print("=" * 50)
+
+# 查看数量列的情况
+print("数量统计：")
+print(df['quantity'].describe())
+
+# 处理负数数量
+negative_count = (df['quantity'] < 0).sum()
+print(f"\n发现 {negative_count} 个负数数量")
+
+# 将负数改为1
+df.loc[df['quantity'] < 0, 'quantity'] = 1
+print("负数数量已修正为1")
+
+# ========== 第5步：提取价格数字 ==========
+print("\n" + "=" * 50)
+print("步骤5：提取价格数字")
+print("=" * 50)
+
+# 查看价格列的格式
+print("价格示例：")
+print(df['price'].head())
+
+# 提取数字（去除'元'字）
+df['price_num'] = df['price'].str.replace('元', '').astype(float)
+
+print("\n转换后的价格：")
+print(df[['price', 'price_num']].head())
+
+# ========== 第6步：标准化手机号 ==========
+print("\n" + "=" * 50)
+print("步骤6：标准化手机号")
+print("=" * 50)
+
+# 查看手机号格式
+print("手机号示例：")
+print(df['phone'].head())
+
+# 去除横线
+df['phone_clean'] = df['phone'].str.replace('-', '')
+
+print("\n清洗后的手机号：")
+print(df[['phone', 'phone_clean']].head())
+
+# ========== 第7步：计算订单金额 ==========
+print("\n" + "=" * 50)
+print("步骤7：计算订单金额")
+print("=" * 50)
+
+# 计算总金额 = 价格 × 数量
+df['total_amount'] = df['price_num'] * df['quantity']
+
+print("订单金额计算完成")
+print(df[['product_name', 'price_num', 'quantity', 'total_amount']].head())
+
+# ========== 第8步：统计商品销售额 ==========
+print("\n" + "=" * 50)
+print("步骤8：统计商品销售额")
+print("=" * 50)
+
+# 按商品分组统计
+product_sales = df.groupby('product_name').agg({
+    'total_amount': 'sum',      # 总销售额
+    'quantity': 'sum',          # 总销量
+    'order_id': 'count'         # 订单数
+}).sort_values('total_amount', ascending=False)
+
+product_sales.columns = ['总销售额', '总销量', '订单数']
+
+print("商品销售额TOP10：")
+print(product_sales.head(10))
+
+# ========== 第9步：生成报告并保存 ==========
+print("\n" + "=" * 50)
+print("步骤9：生成报告并保存")
+print("=" * 50)
+
+# 生成处理报告
+report = f"""
+数据清洗报告
+{'=' * 50}
+1. 原始数据：50行，9列
+2. 删除重复值：{n_duplicates}行
+3. 处理后数据：{len(df)}行
+4. 处理内容：
+   - user_id缺失值用'UNKNOWN'填充
+   - 负数数量修正为1
+   - 价格转换为数值型
+   - 手机号去除横线
+5. 统计结果：
+   - 商品种类：{df['product_name'].nunique()}种
+   - 总销售额：{df['total_amount'].sum():.2f}元
+   - 总订单数：{len(df)}单
+{'=' * 50}
+"""
+
+print(report)
+
+# 保存报告到文件
+with open('数据处理报告.txt', 'w', encoding='utf-8') as f:
+    f.write(report)
+
+print("报告已保存到：数据处理报告.txt")
+
+# 保存清洗后的数据
+df.to_csv('清洗后订单数据.csv', index=False, encoding='utf-8')
+print("数据已保存到：清洗后订单数据.csv")
+
+print("\n" + "=" * 50)
+print("数据处理完成！")
+print("=" * 50)
+\end{lstlisting}
+
+\textbf{关键步骤说明：}
+
+\begin{enumerate}
+    \item \textbf{读取数据}：使用\texttt{pd.read\_csv()}读取CSV文件
+    \item \textbf{查看信息}：用\texttt{shape}、\texttt{columns}、\texttt{head()}了解数据
+    \item \textbf{删除重复}：\texttt{duplicated()}检测，\texttt{drop\_duplicates()}删除
+    \item \textbf{填充缺失}：\texttt{fillna()}用指定值填充
+    \item \textbf{处理异常}：用条件筛选找到异常值，然后修正
+    \item \textbf{字符串处理}：\texttt{str.replace()}去除不需要的字符
+    \item \textbf{类型转换}：\texttt{astype(float)}转换为数值型
+    \item \textbf{计算新列}：直接用列相乘生成新列
+    \item \textbf{分组统计}：\texttt{groupby()}配合\texttt{agg()}进行多维度统计
+\end{enumerate}
+\end{practicebox}
+
+\subsection{题目二参考答案}
+
+\begin{practicebox}[竞赛模拟题2 - 完整解答]
+
+\textbf{解题思路：}
+
+这道题涉及两个文件的处理，需要：
+\begin{enumerate}
+    \item 分别读取两个CSV文件
+    \item 对缺失值采用不同的填充策略
+    \item 对格式混乱的数据进行标准化
+    \item 合并分析结果
+\end{enumerate}
+
+\textbf{完整代码：}
+
+\begin{lstlisting}[caption={员工信息数据处理完整解答}]
+import pandas as pd
+import numpy as np
+
+# ========== 第1步：读取数据 ==========
+print("=" * 50)
+print("步骤1：读取数据")
+print("=" * 50)
+
+# 读取两个CSV文件
+df1 = pd.read_csv('03_缺失值处理_练习.csv')
+df2 = pd.read_csv('04_数据格式清洗_练习.csv')
+
+print(f"员工数据：{df1.shape}")
+print(f"格式清洗数据：{df2.shape}")
+
+# ========== 第2步：处理缺失值（df1） ==========
+print("\n" + "=" * 50)
+print("步骤2：处理缺失值")
+print("=" * 50)
+
+# 查看缺失值情况
+print("缺失值统计：")
+print(df1.isnull().sum())
+
+# 2.1 age用中位数填充
+age_median = df1['age'].median()
+df1['age'] = df1['age'].fillna(age_median)
+print(f"\nage缺失值用中位数 {age_median} 填充")
+
+# 2.2 salary用平均值填充
+salary_mean = df1['salary'].mean()
+df1['salary'] = df1['salary'].fillna(salary_mean)
+print(f"salary缺失值用平均值 {salary_mean:.2f} 填充")
+
+# 2.3 department用众数填充
+dept_mode = df1['department'].mode()[0]
+df1['department'] = df1['department'].fillna(dept_mode)
+print(f"department缺失值用众数 '{dept_mode}' 填充")
+
+# 验证缺失值是否处理完毕
+print("\n处理后缺失值统计：")
+print(df1.isnull().sum())
+
+# ========== 第3步：格式标准化（df2） ==========
+print("\n" + "=" * 50)
+print("步骤3：格式标准化")
+print("=" * 50)
+
+# 3.1 去除姓名前后空格
+print("姓名处理前示例：")
+print(df2['name'].head())
+
+df2['name'] = df2['name'].str.strip()
+
+print("\n姓名处理后示例：")
+print(df2['name'].head())
+
+# 3.2 处理收入格式（将12k转换为12000）
+print("\n收入处理前示例：")
+print(df2['income'].head(10))
+
+def convert_income(income_str):
+    """将收入转换为数值"""
+    # 转换为字符串
+    income_str = str(income_str).strip()
+    
+    # 如果包含k或K，表示千元
+    if 'k' in income_str.lower():
+        # 提取数字部分
+        number = float(income_str.lower().replace('k', ''))
+        return number * 1000
+    else:
+        # 直接转换为浮点数
+        return float(income_str)
+
+# 应用转换函数
+df2['income_num'] = df2['income'].apply(convert_income)
+
+print("\n收入处理后示例：")
+print(df2[['income', 'income_num']].head(10))
+
+# ========== 第4步：按部门统计 ==========
+print("\n" + "=" * 50)
+print("步骤4：按部门统计")
+print("=" * 50)
+
+# 4.1 员工数据统计
+dept_stats = df1.groupby('department').agg({
+    'salary': ['mean', 'max', 'min'],
+    'age': 'mean'
+}).round(2)
+
+# 重命名列
+dept_stats.columns = ['平均工资', '最高工资', '最低工资', '平均年龄']
+
+print("各部门统计：")
+print(dept_stats)
+
+# 4.2 计算部门人数
+dept_count = df1['department'].value_counts()
+print("\n部门人数：")
+print(dept_count)
+
+# ========== 第5步：生成完整报告 ==========
+print("\n" + "=" * 50)
+print("步骤5：生成报告")
+print("=" * 50)
+
+report = f"""
+员工数据处理报告
+{'=' * 50}
+
+一、数据概况
+  员工数据：{len(df1)}人
+  部门数量：{df1['department'].nunique()}个
+
+二、缺失值处理
+  age：用中位数 {age_median} 填充
+  salary：用平均值 {salary_mean:.2f} 填充
+  department：用众数 '{dept_mode}' 填充
+
+三、格式标准化
+  姓名：去除前后空格
+  收入：统一转换为数值（处理k单位）
+
+四、部门统计
+{dept_stats.to_string()}
+
+五、部门人数
+{dept_count.to_string()}
+{'=' * 50}
+"""
+
+print(report)
+
+# 保存报告
+with open('员工数据处理报告.txt', 'w', encoding='utf-8') as f:
+    f.write(report)
+
+print("报告已保存到：员工数据处理报告.txt")
+
+# ========== 第6步：保存处理后的数据 ==========
+print("\n" + "=" * 50)
+print("步骤6：保存数据")
+print("=" * 50)
+
+# 保存员工数据
+df1.to_csv('处理后员工数据.csv', index=False, encoding='utf-8')
+print("员工数据已保存到：处理后员工数据.csv")
+
+# 保存格式清洗数据
+df2.to_csv('处理后格式数据.csv', index=False, encoding='utf-8')
+print("格式数据已保存到：处理后格式数据.csv")
+
+print("\n" + "=" * 50)
+print("数据处理完成！")
+print("=" * 50)
+\end{lstlisting}
+
+\textbf{关键步骤说明：}
+
+\begin{enumerate}
+    \item \textbf{读取多个文件}：分别用\texttt{pd.read\_csv()}读取
+    \item \textbf{不同填充策略}：
+    \begin{itemize}
+        \item 数值型（age）：用\texttt{median()}中位数，不受异常值影响
+        \item 数值型（salary）：用\texttt{mean()}平均值
+        \item 分类型（department）：用\texttt{mode()}众数
+    \end{itemize}
+    \item \textbf{自定义函数}：用\texttt{apply()}应用自定义转换函数
+    \item \textbf{多维度统计}：用\texttt{agg()}同时进行多个统计计算
+    \item \textbf{生成报告}：将处理过程和结果整理成文本报告
+\end{enumerate}
+\end{practicebox}
+
+%========================================
+\section{常用代码速查表}
+%========================================
+
+\subsection{数据读取与保存}
+
+\begin{lstlisting}[caption={读写数据}]
+# 读取CSV
+df = pd.read_csv('文件.csv', encoding='utf-8')
+
+# 保存CSV
+df.to_csv('输出.csv', index=False, encoding='utf-8')
+\end{lstlisting}
+
+\subsection{数据查看}
+
+\begin{lstlisting}[caption={查看数据}]
+df.head()           # 前5行
+df.tail()           # 后5行
+df.shape            # 形状（行数，列数）
+df.columns          # 列名
+df.dtypes           # 数据类型
+df.info()           # 详细信息
+df.describe()       # 统计摘要
+\end{lstlisting}
+
+\subsection{数据选择}
+
+\begin{lstlisting}[caption={选择数据}]
+# 选择列
+df['列名']          # 单列
+df[['列1', '列2']]  # 多列
+
+# 选择行
+df.iloc[0]          # 第1行（按位置）
+df.iloc[0:5]        # 前5行
+df.loc['标签']      # 按标签
+
+# 条件筛选
+df[df['年龄'] > 18]
+df[(df['年龄'] > 18) & (df['性别'] == '男')]
+\end{lstlisting}
+
+\subsection{数据清洗}
+
+\begin{lstlisting}[caption={清洗数据}]
+# 缺失值
+df.isnull().sum()                           # 统计缺失值
+df.dropna()                                 # 删除缺失值
+df['列'].fillna(值)                         # 填充缺失值
+df['列'].fillna(df['列'].mean())           # 用均值填充
+
+# 重复值
+df.duplicated().sum()                       # 统计重复值
+df.drop_duplicates()                        # 删除重复值
+
+# 异常值（IQR方法）
+Q1 = df['列'].quantile(0.25)
+Q3 = df['列'].quantile(0.75)
+IQR = Q3 - Q1
+outliers = df[(df['列'] < Q1-1.5*IQR) | (df['列'] > Q3+1.5*IQR)]
+\end{lstlisting}
+
+\subsection{数据转换}
+
+\begin{lstlisting}[caption={转换数据}]
+# 类型转换
+df['列'].astype(int)
+df['列'].astype(str)
+pd.to_datetime(df['日期列'])
+
+# 字符串处理
+df['列'].str.strip()                        # 去空格
+df['列'].str.replace('旧', '新')            # 替换
+df['列'].str.contains('关键词')             # 包含判断
+
+# 应用函数
+df['新列'] = df['列'].apply(函数)
+\end{lstlisting}
+
+\subsection{分组统计}
+
+\begin{lstlisting}[caption={分组统计}]
+# 简单分组
+df.groupby('分组列')['统计列'].mean()
+
+# 多列多统计
+df.groupby(['列1', '列2']).agg({
+    '列3': ['mean', 'sum'],
+    '列4': 'count'
+})
+\end{lstlisting}
+
+\end{document}
