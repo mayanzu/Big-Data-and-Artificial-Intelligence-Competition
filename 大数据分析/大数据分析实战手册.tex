@@ -713,6 +713,233 @@ plt.show()
 \end{knowledgebox}
 
 %========================================
+\section{第六章：从不同数据源读取数据}
+
+\begin{knowledgebox}[为什么要学多种数据源？]
+大数据平台上的数据可能存储在不同地方：
+\begin{itemize}
+    \item \textbf{HDFS}：原始文件（CSV、JSON、日志）
+    \item \textbf{HBase}：结构化的用户/商品信息
+    \item \textbf{ClickHouse}：已经统计好的聚合数据
+\end{itemize}
+你需要知道"从哪里读、怎么读"。
+\end{knowledgebox}
+
+\subsection{从 HDFS 读取（通过 Hive）}
+
+\begin{lstlisting}[language=SQL]
+-- Hive 通过 LOCATION 指向 HDFS 上的文件
+-- 建表时指定 HDFS 路径，之后就可以用 SQL 查询
+CREATE EXTERNAL TABLE raw_logs (
+    line STRING
+) LOCATION '/user/data/logs/';
+
+-- 也可以用正则提取字段
+CREATE EXTERNAL TABLE parsed_logs (
+    user_id STRING, action STRING, time_str STRING
+)
+ROW FORMAT SERDE 'org.apache.hadoop.hive.serde2.RegexSerDe'
+WITH SERDEPROPERTIES (
+    "input.regex" = "(\\S+)\\s+(\\S+)\\s+(\\S+)"
+)
+LOCATION '/user/data/logs/';
+\end{lstlisting}
+
+\subsection{从 HBase 读取}
+
+\begin{lstlisting}[language=SQL]
+-- 在 Hive 中创建外部表映射 HBase
+CREATE EXTERNAL TABLE user_profile_hbase (
+    rowkey STRING,
+    name STRING,
+    age INT,
+    city STRING
+)
+STORED BY 'org.apache.hadoop.hive.hbase.HBaseStorageHandler'
+WITH SERDEPROPERTIES (
+    "hbase.columns.mapping" = ":key,info:name,info:age,info:city"
+)
+TBLPROPERTIES ("hbase.table.name" = "user_profile");
+
+-- 现在可以用 SQL 查询 HBase 数据了
+SELECT city, AVG(age) FROM user_profile_hbase GROUP BY city;
+\end{lstlisting}
+
+\subsection{PySpark 读取 HDFS JSON}
+
+\begin{lstlisting}[language=Python]
+from pyspark.sql import SparkSession
+
+spark = SparkSession.builder.appName("Analysis").getOrCreate()
+
+# 读取 HDFS 上的 JSON 文件
+df = spark.read.json("hdfs://node1:9000/user/data/ecommerce/user_behavior.json")
+
+# 查看数据
+df.show(5)           # 前5行
+df.printSchema()     # 列名和类型
+df.describe().show() # 统计摘要
+df.count()           # 总行数
+\end{lstlisting}
+
+\section{第七章：Spark DataFrame 操作}
+
+\begin{knowledgebox}[Spark DataFrame 是什么？]
+Spark DataFrame = "分布式版本的 Pandas DataFrame"。语法非常相似，但数据分布在多台机器上并行处理。
+
+\textbf{类比}：Pandas 是一个工人干活，Spark 是一群工人同时干活。
+\end{knowledgebox}
+
+\subsection{基本操作}
+
+\begin{lstlisting}[language=Python]
+from pyspark.sql import SparkSession
+from pyspark.sql.functions import *
+
+spark = SparkSession.builder.getOrCreate()
+df = spark.read.json("hdfs://node1:9000/user/data/ecommerce/user_behavior.json")
+
+# 选择列
+df.select("user_id", "event_type", "price").show(5)
+
+# 过滤行
+df.filter(col("event_type") == "buy").show(5)
+df.filter(col("price") > 1000).show(5)
+df.filter((col("event_type") == "buy") & (col("price") > 1000)).show(5)
+
+# 分组统计
+df.groupBy("event_type").count().show()
+df.groupBy("category").agg(
+    avg("price").alias("平均价格"),
+    count("*").alias("记录数")
+).show()
+
+# 排序
+df.orderBy(col("price").desc()).show(10)
+\end{lstlisting}
+
+\subsection{数据转换}
+
+\begin{lstlisting}[language=Python]
+# 新增列
+df = df.withColumn("price_level",
+    when(col("price") < 100, "低价")
+    .when(col("price") < 1000, "中价")
+    .otherwise("高价")
+)
+
+# 删除列
+df = df.drop("ip")
+
+# 重命名列
+df = df.withColumnRenamed("event_type", "事件类型")
+
+# 类型转换
+df = df.withColumn("price", col("price").cast("double"))
+\end{lstlisting}
+
+\subsection{多表关联（JOIN）}
+
+\begin{lstlisting}[language=Python]
+# 假设有两个表：用户行为表 和 商品信息表
+behavior = spark.read.json("hdfs://node1:9000/user/data/ecommerce/user_behavior.json")
+# products 需要先从 HDFS 读取（或从 Hive 查询）
+
+# 内连接：只保留两个表都匹配的行
+joined = behavior.join(products, on="product_id", how="inner")
+
+# 左连接：保留左表所有行
+joined = behavior.join(products, on="product_id", how="left")
+
+# 关联后统计
+joined.groupBy("category").agg(
+    count("*").alias("总行为数"),
+    sum(when(col("event_type")=="buy", 1).otherwise(0)).alias("购买数")
+).show()
+\end{lstlisting}
+
+\section{第八章：更多分析场景}
+
+\subsection{场景6：RFM 用户价值分析}
+
+\begin{theorybox}[什么是 RFM？]
+RFM 是衡量用户价值的经典模型：
+\begin{itemize}
+    \item \textbf{R}（Recency）：最近一次消费距今多久（越近越好）
+    \item \textbf{F}（Frequency）：消费频率（越多越好）
+    \item \textbf{M}（Monetary）：消费金额（越高越好）
+\end{itemize}
+\end{theorybox}
+
+\begin{lstlisting}[language=SQL]
+-- 在 Hive 中计算 RFM
+SELECT
+    user_id,
+    MAX(timestamp) AS 最近消费时间,
+    COUNT(CASE WHEN event_type='buy' THEN 1 END) AS 消费次数,
+    SUM(CASE WHEN event_type='buy' THEN price ELSE 0 END) AS 消费总额
+FROM user_behavior
+GROUP BY user_id
+ORDER BY 消费总额 DESC
+LIMIT 20;
+\end{lstlisting}
+
+\subsection{场景7：留存分析}
+
+\begin{theorybox}[什么是留存？]
+留存 = "昨天来过的用户，今天还来吗？"。留存率越高，说明用户粘性越好。
+\end{theorybox}
+
+\begin{lstlisting}[language=SQL]
+-- 按日期统计独立用户数和新用户数
+SELECT
+    SUBSTR(timestamp, 1, 10) AS 日期,
+    COUNT(DISTINCT user_id) AS 独立用户数
+FROM user_behavior
+GROUP BY SUBSTR(timestamp, 1, 10)
+ORDER BY 日期;
+\end{lstlisting}
+
+\subsection{场景8：品类关联分析}
+
+\begin{lstlisting}[language=SQL]
+-- 找出被同一批用户关注最多的品类对
+SELECT
+    a.category AS 品类A,
+    b.category AS 品类B,
+    COUNT(DISTINCT a.user_id) AS 共同用户数
+FROM user_behavior a
+JOIN user_behavior b
+    ON a.user_id = b.user_id
+    AND a.category < b.category
+WHERE a.event_type = 'buy' AND b.event_type = 'buy'
+GROUP BY a.category, b.category
+ORDER BY 共同用户数 DESC
+LIMIT 20;
+\end{lstlisting}
+
+\section{第九章：竞赛报告写作指导}
+
+\begin{knowledgebox}[报告结构模板（5 部分）]
+\begin{enumerate}
+    \item \textbf{问题描述}（200字）：我们分析了什么问题，为什么重要
+    \item \textbf{数据说明}（200字）：数据来源（仿真平台）、数据量、字段含义
+    \item \textbf{分析方法}（200字）：用了 Hive SQL + Spark + Python，做了哪些分析
+    \item \textbf{分析结果}（核心，配图表）：每张图配 2-3 句解读
+    \item \textbf{结论建议}（200字）：根据分析给出业务建议
+\end{enumerate}
+\end{knowledgebox}
+
+\begin{tipbox}[常见扣分点]
+\begin{itemize}
+    \item 只有数字没有图表
+    \item 图表没有标题和坐标轴标签
+    \item 只展示数据不做解读
+    \item 没有结论建议
+    \item 报告排版混乱
+\end{itemize}
+\end{tipbox}
+
 \section{附录：SQL 速查表}
 %========================================
 
