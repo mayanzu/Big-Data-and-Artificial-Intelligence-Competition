@@ -84,6 +84,13 @@
 \begin{document}
 
 \maketitle
+
+\begin{tipbox}[学习指引]
+\textbf{后续课程}：学完 Pandas 后，下一步是部署大数据平台。
+
+\textbf{配套练习}：练习数据已包含在本手册的 CSV 文件中。更多练习见仓库根目录的《仿真实战练习.md》。
+\end{tipbox}
+
 \tableofcontents
 \newpage
 
@@ -1066,6 +1073,104 @@ print("\n数据已保存到：清洗后的订单数据.csv")
 \end{lstlisting}
 
 %========================================
+\section{云端仿真平台实战}
+
+\begin{knowledgebox}[这一章要做什么？]
+前面的练习用的是本地 CSV 文件。这一章教你从云端数据仿真平台实时获取数据，用 Pandas 做分析。
+
+\textbf{仿真平台地址}：\texttt{http://163.7.1.176:8889}
+
+平台每秒自动生成电商用户行为数据（浏览、点击、加购、购买等），你可以通过 API 获取。
+\end{knowledgebox}
+
+\subsection{用 requests 获取数据}
+
+\begin{lstlisting}[language=Python]
+import requests
+import pandas as pd
+
+# 从仿真平台获取 500 条数据
+response = requests.get("http://163.7.1.176:8889/api/data?n=500")
+data = response.json()  # 解析 JSON
+
+# 转换为 DataFrame
+df = pd.DataFrame(data)
+
+# 查看数据
+print(df.shape)         # (500, 11)
+print(df.columns)       # 列名
+print(df.head())        # 前5行
+print(df.dtypes)        # 数据类型
+\end{lstlisting}
+
+\subsection{数据清洗练习}
+
+\begin{practicebox}[练习1：从仿真平台获取数据并清洗]
+\begin{lstlisting}[language=Python]
+import requests
+import pandas as pd
+
+# 获取 1000 条数据
+df = pd.DataFrame(requests.get("http://163.7.1.176:8889/api/data?n=1000").json())
+
+# 练习1：检查缺失值
+print(df.isnull().sum())
+
+# 练习2：price 列有缺失值（不是所有事件都有价格）
+# 用 0 填充缺失的价格
+df['price'] = df['price'].fillna(0)
+
+# 练习3：将 timestamp 转为日期类型
+df['timestamp'] = pd.to_datetime(df['timestamp'])
+
+# 练习4：提取小时
+df['hour'] = df['timestamp'].dt.hour
+
+# 练习5：按事件类型统计
+print(df['event_type'].value_counts())
+\end{lstlisting}
+\end{practicebox}
+
+\subsection{数据分析练习}
+
+\begin{practicebox}[练习2：分析仿真平台数据]
+\begin{lstlisting}[language=Python]
+import requests
+import pandas as pd
+
+df = pd.DataFrame(requests.get("http://163.7.1.176:8889/api/data?n=2000").json())
+
+# 练习1：各品类的平均价格
+print(df.groupby('category')['price'].mean().sort_values(ascending=False))
+
+# 练习2：各设备的使用占比
+print(df['device'].value_counts(normalize=True))
+
+# 练习3：购买记录筛选
+buys = df[df['event_type'] == 'buy']
+print(f"购买记录: {len(buys)} 条")
+print(buys.groupby('category')['price'].sum().sort_values(ascending=False))
+
+# 练习4：各来源页面的转化情况
+pivot = df.pivot_table(values='user_id', index='page_source',
+                       columns='event_type', aggfunc='count', fill_value=0)
+print(pivot)
+\end{lstlisting}
+\end{practicebox}
+
+\subsection{导出清洗后的数据}
+
+\begin{lstlisting}[language=Python]
+# 清洗后导出为 CSV（后续大数据分析会用到）
+df_clean = df.dropna(subset=['price'])
+df_clean.to_csv('cleaned_behavior.csv', index=False, encoding='utf-8-sig')
+print(f"已导出 {len(df_clean)} 条清洗后的数据")
+\end{lstlisting}
+
+\begin{tipbox}[衔接下一步]
+清洗后的数据 \texttt{cleaned\_behavior.csv} 可以上传到大数据平台（HDFS），在《大数据分析实战手册》中用 Spark SQL 进一步分析。
+\end{tipbox}
+
 \section{竞赛模拟题}
 %========================================
 
