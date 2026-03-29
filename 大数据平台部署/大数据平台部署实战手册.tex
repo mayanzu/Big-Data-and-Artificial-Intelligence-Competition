@@ -2189,6 +2189,35 @@ hdfs dfs -ls /hbase
 \end{enumerate}
 \end{tipbox}
 
+\begin{warnbox}[故障排查决策树——按图索骥找问题]
+当某个组件启动失败时，按以下顺序排查：
+
+\begin{footnotesize}
+\begin{verbatim}
+服务启动失败？
+  |
+  |-- jps 看进程是否在运行
+  |     |-- 不在 → 看日志（cat $组件/logs/*.log | tail -50）
+  |     |        |-- 日志报 "Connection refused" → 检查依赖服务是否启动
+  |     |        |-- 日志报 "OutOfMemory" → 减小堆内存
+  |     |        |-- 日志报 "Permission denied" → 检查用户权限
+  |     |        |-- 日志报 "Address already in use" → 端口被占用，换端口或杀进程
+  |     |-- 在 → 服务已启动，检查下一步
+  |
+  |-- 客户端连不上？
+  |     |-- ping 目标主机名 → 检查网络
+  |     |-- 检查 /etc/hosts 是否一致（三台机器都要检查）
+  |     |-- 检查防火墙（systemctl status firewalld）
+  |     |-- 检查 advertised.listeners（Kafka 特有）
+  |
+  |-- 数据读不到？
+        |-- HDFS: hdfs dfs -ls /  看文件是否存在
+        |-- Hive: show tables; 看表是否创建
+        |-- Kafka: kafka-topics.sh --list 看 Topic 是否存在
+\end{verbatim}
+\end{footnotesize}
+\end{warnbox}
+
 \begin{tipbox}[学习建议]
 \begin{enumerate}
     \item \textbf{循序渐进}：按照章节顺序逐步部署，确保每个组件正常运行后再进行下一步

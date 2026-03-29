@@ -454,7 +454,123 @@ plt.show()
 \end{lstlisting}
 
 %========================================
-\section{第四章：Pyecharts 交互式图表}
+\section{第四章：端到端实战——从仿真平台到报告}
+
+\begin{knowledgebox}[这一章要做什么？]
+做一个完整的端到端案例：从仿真平台获取数据 $\rightarrow$ 分析 $\rightarrow$ 画图 $\rightarrow$ 写报告。这是竞赛中最可能考到的完整流程。
+\end{knowledgebox}
+
+\subsection{步骤1：从仿真平台获取并分析数据}
+
+\begin{lstlisting}[language=bash]
+# 【在 node1 上执行】从仿真平台获取数据
+curl -s "http://163.7.1.176:8889/api/data?n=5000" > /tmp/behavior.json
+hdfs dfs -put /tmp/behavior.json /user/data/ecommerce/
+
+# 用 Hive 做分析并导出
+hive -e "
+USE ecommerce;
+
+-- 导出1：事件类型统计
+SELECT event_type, COUNT(*) as cnt
+FROM user_behavior GROUP BY event_type
+ORDER BY cnt DESC
+" > /tmp/event_stats.tsv
+
+hive -e "
+USE ecommerce;
+
+-- 导出2：品类浏览量vs购买量
+SELECT category,
+    SUM(CASE WHEN event_type='view' THEN 1 ELSE 0 END) as views,
+    SUM(CASE WHEN event_type='buy' THEN 1 ELSE 0 END) as buys
+FROM user_behavior GROUP BY category
+ORDER BY views DESC
+" > /tmp/category_stats.tsv
+
+hive -e "
+USE ecommerce;
+
+-- 导出3：每小时活跃趋势
+SELECT SUBSTR(timestamp,12,2) as hour, COUNT(*) as cnt
+FROM user_behavior
+GROUP BY SUBSTR(timestamp,12,2) ORDER BY hour
+" > /tmp/hourly_stats.tsv
+
+# 下载到本地画图
+# scp root@node1:/tmp/*.tsv ./
+\end{lstlisting}
+
+\subsection{步骤2：Python 画图}
+
+\begin{lstlisting}[language=Python]
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+plt.rcParams['font.sans-serif'] = ['SimHei']
+plt.rcParams['axes.unicode_minus'] = False
+sns.set_theme(style='whitegrid')
+
+# 读取数据
+event = pd.read_csv('/tmp/event_stats.tsv', sep='\\t', names=['type', 'cnt'])
+category = pd.read_csv('/tmp/category_stats.tsv', sep='\\t', names=['cat', 'views', 'buys'])
+hourly = pd.read_csv('/tmp/hourly_stats.tsv', sep='\\t', names=['hour', 'cnt'])
+
+# 创建 2x2 仪表盘
+fig, axes = plt.subplots(2, 2, figsize=(14, 10))
+
+# 图1：行为类型柱状图
+axes[0, 0].barh(event['type'], event['cnt'], color='steelblue')
+axes[0, 0].set_title('用户行为类型分布')
+
+# 图2：品类浏览量 vs 购买量
+x = range(len(category))
+axes[0, 1].bar(x, category['views'], width=0.4, label='浏览')
+axes[0, 1].bar([i+0.4 for i in x], category['buys'], width=0.4, label='购买')
+axes[0, 1].set_xticks([i+0.2 for i in x])
+axes[0, 1].set_xticklabels(category['cat'], rotation=45, ha='right')
+axes[0, 1].set_title('各品类浏览量 vs 购买量')
+axes[0, 1].legend()
+
+# 图3：每小时活跃趋势
+axes[1, 0].plot(hourly['hour'], hourly['cnt'], marker='o', color='green')
+axes[1, 0].set_title('每小时活跃趋势')
+axes[1, 0].set_xlabel('小时')
+
+# 图4：品类饼图
+axes[1, 1].pie(category['views'], labels=category['cat'], autopct='%.1f%%')
+axes[1, 1].set_title('品类浏览占比')
+
+plt.suptitle('电商平台用户行为分析报告', fontsize=16, fontweight='bold')
+plt.tight_layout()
+plt.savefig('analysis_report.png', dpi=150, bbox_inches='tight')
+plt.show()
+\end{lstlisting}
+
+\subsection{步骤3：撰写分析报告}
+
+\begin{knowledgebox}[竞赛报告结构模板]
+\begin{enumerate}
+    \item \textbf{问题描述}（1段）：我们分析了什么问题，为什么重要
+    \item \textbf{数据说明}（1段）：数据来源、数据量、字段含义
+    \item \textbf{分析方法}（1段）：用了什么工具，做了哪些分析
+    \item \textbf{分析结果}（核心，配图表）：每张图配 2-3 句解读
+    \item \textbf{结论建议}（1段）：根据分析结果给出建议
+\end{enumerate}
+\end{knowledgebox}
+
+\begin{tipbox}[常见扣分点]
+\begin{itemize}
+    \item 只有数字没有图表（图表是必考项）
+    \item 图表没有标题和标签（不专业的表现）
+    \item 只展示数据不做解读（分析不是数据罗列）
+    \item 没有结论建议（分析的目的是给建议）
+    \item 报告排版混乱（用 Word 排版，字号统一）
+\end{itemize}
+\end{tipbox}
+
+\section{第五章：Pyecharts 交互式图表}
 %========================================
 
 \begin{knowledgebox}[Pyecharts 是什么？]
