@@ -983,7 +983,93 @@ ORDER BY 共同用户数 DESC
 LIMIT 20;
 \end{lstlisting}
 
-\section{第九章：竞赛报告写作指导}
+\section{第九章：数据挖掘——综合应用（本科+高职要求）}
+
+\begin{knowledgebox}[数据挖掘是什么意思？]
+数据挖掘 = 从大量数据中发现隐藏的规律和模式。竞赛要求"综合应用数据预处理、分析与挖掘技术求解给定问题"。
+
+\textbf{常见考点}：
+\begin{itemize}
+    \item 分类：预测用户是否会购买（是/否）
+    \item 聚类：将用户分为若干群体
+    \item 关联规则：买了 A 的人通常也会买 B
+    \item 回归：预测某个连续值（如商品价格）
+\end{itemize}
+\end{knowledgebox}
+
+\subsection{案例：用户购买预测（分类）}
+
+\begin{lstlisting}[language=Python]
+from pyspark.ml.classification import LogisticRegression
+from pyspark.ml.feature import VectorAssembler
+
+# 1. 构建特征：每个用户的统计信息
+user_features = df.groupBy("user_id").agg(
+    count("*").alias("总行为数"),
+    sum(when(col("event_type") == "buy", 1).otherwise(0)).alias("购买次数"),
+    avg("price").alias("平均价格")
+)
+
+# 2. 创建标签：是否购买过
+user_features = user_features.withColumn("label",
+    when(col("购买次数") > 0, 1).otherwise(0))
+
+# 3. 组装特征向量
+assembler = VectorAssembler(
+    inputCols=["总行为数", "购买次数", "平均价格"],
+    outputCol="features")
+data = assembler.transform(user_features)
+
+# 4. 拆分训练/测试集
+train, test = data.randomSplit([0.7, 0.3], seed=42)
+
+# 5. 训练模型
+lr = LogisticRegression(featuresCol="features", labelCol="label")
+model = lr.fit(train)
+
+# 6. 预测和评估
+predictions = model.transform(test)
+predictions.select("user_id", "label", "prediction").show(10)
+
+# 7. 计算准确率
+correct = predictions.filter(col("label") == col("prediction")).count()
+total = predictions.count()
+print(f"准确率: {correct/total:.2%}")
+\end{lstlisting}
+
+\subsection{案例：用户分群（聚类）}
+
+\begin{lstlisting}[language=Python]
+from pyspark.ml.clustering import KMeans
+
+# 构建用户特征
+user_features = df.groupBy("user_id").agg(
+    count("*").alias("总行为"),
+    sum(when(col("event_type") == "view", 1).otherwise(0)).alias("浏览"),
+    sum(when(col("event_type") == "buy", 1).otherwise(0)).alias("购买"),
+    avg("price").alias("平均价格")
+)
+
+# 组装特征
+assembler = VectorAssembler(
+    inputCols=["总行为", "浏览", "购买", "平均价格"],
+    outputCol="features")
+data = assembler.transform(user_features)
+
+# K-Means 聚类（分 3 群）
+kmeans = KMeans(featuresCol="features", k=3, seed=42)
+model = kmeans.fit(data)
+
+# 查看聚类结果
+result = model.transform(data)
+result.groupBy("prediction").agg(
+    count("*").alias("用户数"),
+    avg("总行为").alias("平均行为数"),
+    avg("购买").alias("平均购买数")
+).show()
+\end{lstlisting}
+
+\section{第十章：竞赛报告写作指导}
 
 \begin{knowledgebox}[报告结构模板（5 部分）]
 \begin{enumerate}

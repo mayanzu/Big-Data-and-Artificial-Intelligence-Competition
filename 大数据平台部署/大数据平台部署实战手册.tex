@@ -2000,7 +2000,203 @@ SELECT * FROM user_behavior_hbase LIMIT 10;
 \end{tipbox}
 
 %========================================
+\section{组件参数优化（本科+高职要求）}
+
+\begin{knowledgebox}[参数优化是什么意思？]
+竞赛不仅要求"部署成功"，还要求"根据题目要求调整参数"。比如：
+\begin{itemize}
+    \item 题目说"HDFS 副本数设为 2"→ 你需要修改 hdfs-site.xml 中的 dfs.replication
+    \item 题目说"Spark Executor 内存设为 2G"→ 你需要修改 spark-submit 的参数
+    \item 题目说"Kafka 分区数设为 6"→ 你需要修改 Topic 配置
+\end{itemize}
+
+本章列出各组件最常考的参数和修改方法。
+\end{knowledgebox}
+
+\subsection{HDFS 参数优化}
+
+{\footnotesize
+\begin{table}[H]
+\centering
+\begin{tabular}{llll}
+\toprule
+\textbf{参数} & \textbf{说明} & \textbf{默认值} & \textbf{修改方法} \\
+\midrule
+dfs.replication & 副本数 & 3 & hdfs-site.xml \\
+dfs.blocksize & 数据块大小 & 128MB & hdfs-site.xml \\
+dfs.namenode.handler.count & NN并发处理数 & 10 & hdfs-site.xml \\
+\bottomrule
+\end{tabular}
+\end{table}
+}
+
+\begin{lstlisting}[language=XML]
+<!-- hdfs-site.xml 中修改副本数 -->
+<property>
+    <name>dfs.replication</name>
+    <value>2</value>  <!-- 改为 2 -->
+</property>
+<!-- 修改块大小 -->
+<property>
+    <name>dfs.blocksize</name>
+    <value>64m</value>  <!-- 改为 64MB -->
+</property>
+\end{lstlisting}
+
+\subsection{YARN 参数优化}
+
+{\footnotesize
+\begin{table}[H]
+\centering
+\begin{tabular}{llll}
+\toprule
+\textbf{参数} & \textbf{说明} & \textbf{默认值} & \textbf{修改方法} \\
+\midrule
+yarn.nodemanager.resource.memory-mb & 节点可用内存 & 8192 & yarn-site.xml \\
+yarn.scheduler.minimum-allocation-mb & 最小容器内存 & 1024 & yarn-site.xml \\
+yarn.nodemanager.vmem-check-enabled & 虚拟内存检查 & true & yarn-site.xml \\
+\bottomrule
+\end{tabular}
+\end{table}
+}
+
+\subsection{Spark 参数优化}
+
+\begin{lstlisting}[language=bash]
+# 提交 Spark 作业时指定参数
+spark-submit \
+    --num-executors 4 \          # Executor 数量
+    --executor-cores 2 \         # 每个 Executor 的核心数
+    --executor-memory 2g \       # 每个 Executor 的内存
+    --driver-memory 1g \         # Driver 内存
+    your_app.py
+\end{lstlisting}
+
+\subsection{Kafka 参数优化}
+
+{\footnotesize
+\begin{table}[H]
+\centering
+\begin{tabular}{llll}
+\toprule
+\textbf{参数} & \textbf{说明} & \textbf{默认值} & \textbf{修改方法} \\
+\midrule
+num.partitions & 默认分区数 & 3 & server.properties \\
+log.retention.hours & 数据保留时间 & 168h & server.properties \\
+message.max.bytes & 最大消息大小 & 1MB & server.properties \\
+\bottomrule
+\end{tabular}
+\end{table}
+}
+
+\subsection{HBase 参数优化}
+
+{\footnotesize
+\begin{table}[H]
+\centering
+\begin{tabular}{llll}
+\toprule
+\textbf{参数} & \textbf{说明} & \textbf{默认值} & \textbf{修改方法} \\
+\midrule
+hbase.regionserver.handler.count & RS并发处理数 & 30 & hbase-site.xml \\
+hbase.hregion.max.filesize & Region最大大小 & 10GB & hbase-site.xml \\
+\bottomrule
+\end{tabular}
+\end{table}
+}
+
+\subsection{参数修改后的生效方式}
+
+\begin{lstlisting}[language=bash]
+# 修改配置文件后，需要重启对应服务才能生效
+
+# HDFS 参数修改后：
+stop-dfs.sh && start-dfs.sh
+
+# YARN 参数修改后：
+stop-yarn.sh && start-yarn.sh
+
+# Kafka 参数修改后（部分参数可动态修改）：
+kafka-configs.sh --alter --entity-type topics --entity-name user-behavior \
+    --add-config max.message.bytes=2097152
+
+# HBase 参数修改后：
+stop-hbase.sh && start-hbase.sh
+\end{lstlisting}
+
+\begin{warnbox}[考试要点]
+参数修改后一定要验证！
+\begin{lstlisting}[language=bash]
+# 验证 HDFS 副本数
+hdfs dfsadmin -report  # 查看副本数
+
+# 验证 Kafka 分区数
+kafka-topics.sh --describe --bootstrap-server node1:9092 --topic user-behavior
+
+# 验证 Spark 内存
+spark-submit --version  # 查看默认配置
+\end{lstlisting}
+\end{warnbox}
+
+%========================================
+% Flink（高职要求）
+%========================================
+
+\section{Flink 实时计算引擎（高职要求）}
+
+\begin{knowledgebox}[Flink 是什么？]
+Flink 是一个流处理框架，和 Spark Streaming 类似但更强大。在高职竞赛中，Flink 要求出现在"大数据平台搭建与运维"模块中。
+
+\textbf{和 Spark 的区别}：
+\begin{itemize}
+    \item Spark Streaming：微批处理（每几秒处理一批数据）
+    \item Flink：真正的逐条处理（每条数据来了就处理）
+\end{itemize}
+
+\textbf{竞赛中你需要做的}：下载、安装、配置、启动 Flink，然后写一个简单的 WordCount 程序验证。
+\end{knowledgebox}
+
+\subsection{Flink 安装}
+
+\begin{lstlisting}[language=bash]
+# 下载 Flink
+wget https://repo.huaweicloud.com/apache/flink/flink-1.17.2/flink-1.17.2-bin-scala_2.12.tgz
+
+# 解压
+tar -zxvf flink-1.17.2-bin-scala_2.12.tgz -C /opt/
+ln -s /opt/flink-1.17.2 /opt/flink
+
+# 配置环境变量
+echo 'export FLINK_HOME=/opt/flink' >> /etc/profile
+echo 'export PATH=$FLINK_HOME/bin:$PATH' >> /etc/profile
+source /etc/profile
+\end{lstlisting}
+
+\subsection{Flink 配置与启动}
+
+\begin{lstlisting}[language=bash]
+# 编辑配置
+vi $FLINK_HOME/conf/flink-conf.yaml
+
+# 关键配置
+jobmanager.rpc.address: node1    # JobManager 地址
+taskmanager.memory.process.size: 1024m  # TaskManager 内存
+\end{lstlisting}
+
+\begin{lstlisting}[language=bash]
+# 启动 Flink（standalone 模式）
+start-cluster.sh
+
+# 访问 Web UI
+# http://node1:8081
+
+# 提交 WordCount 任务验证
+flink run $FLINK_HOME/examples/batch/WordCount.jar
+\end{lstlisting}
+
+%========================================
 \section{常用命令速查表}
+%========================================
 %========================================
 
 \begin{table}[H]
