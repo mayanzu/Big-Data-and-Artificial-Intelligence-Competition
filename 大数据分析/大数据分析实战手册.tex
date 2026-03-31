@@ -62,12 +62,29 @@
 \begin{document}
 \maketitle
 
+\section*{仿真平台 API 参考}
+
+{\footnotesize
+\begin{table}[H]
+\centering
+\begin{tabular}{lll}
+\toprule
+\textbf{接口} & \textbf{参数} & \textbf{说明} \\
+\midrule
+/api/data & n=1-100 & 实时行为数据 \\
+/api/log & lines=1-50 & 逐行 JSON 日志 \\
+/api/history & page, per\_page, event\_type, category & 历史数据 \\
+/api/users & page, per\_page & 用户画像（1000人） \\
+/api/products & page, per\_page, category & 商品数据（500个） \\
+/api/stats & - & 统计汇总 \\
+\bottomrule
+\end{tabular}
+\end{table}
+}
+
 \begin{tipbox}[学习指引]
-\textbf{前序课程}：确保你已经完成了大数据平台的部署（见《大数据平台部署实战手册》）。
-
-\textbf{后续课程}：分析完成后，下一步是将结果可视化。
-
-\textbf{配套练习}：更多练习见仓库根目录的《仿真实战练习.md》。
+\textbf{前序}：确保完成大数据平台部署（见部署手册）。\textbf{后续}：分析完后做可视化。
+\textbf{练习}：见《仿真实战练习.md》。
 \end{tipbox}
 
 \tableofcontents

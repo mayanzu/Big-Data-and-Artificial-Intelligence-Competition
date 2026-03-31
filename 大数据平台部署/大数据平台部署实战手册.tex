@@ -94,12 +94,42 @@
 
 \maketitle
 
+\section*{竞赛总览}
+
+\begin{table}[H]
+\centering
+\caption{竞赛评分标准}
+{\footnotesize
+\begin{tabular}{llll}
+\toprule
+\textbf{模块} & \textbf{内容} & \textbf{分值} & \textbf{对应手册} \\
+\midrule
+大数据平台部署 & 平台部署、参数调整、可用性测试、联调 & 10分 & 本手册 \\
+数据预处理 & 脏数据清洗、格式转换、准确性/完整性 & 30分 & Pandas数据处理 \\
+数据分析 & 在已部署平台上做统计分析、挖掘规律 & 30分 & 大数据分析 \\
+综合报告 & 需求分析、方案设计、测试报告、结果展示 & 30分 & 大数据可视化 \\
+\bottomrule
+\end{tabular}
+}
+\end{table}
+
+\begin{tipbox}[30天学习路线]
+\textbf{前提}：已学完 Python 基础，了解 Linux 基本命令（cd/ls/vi）
+
+\begin{enumerate}
+    \item \textbf{第 1-5 天}：学 Pandas 数据处理手册
+    \item \textbf{第 6-18 天}：学本手册（部署），重点花时间练习
+    \item \textbf{第 19-25 天}：学数据分析 + 可视化
+    \item \textbf{第 26-30 天}：模拟竞赛（3 小时全流程）
+\end{enumerate}
+
+\textbf{仿真平台}：\texttt{http://163.7.1.176:8889}——所有练习的数据源，提供 326K+ 行为数据、1000 用户画像、500 商品数据。
+\end{tipbox}
+
 \begin{tipbox}[学习指引]
-\textbf{前序课程}：如果你还不熟悉 Python 数据处理，建议先学习《Pandas 数据处理实战手册》。
-
-\textbf{后续课程}：平台部署好后，下一步是在平台上做数据分析。
-
-\textbf{配套练习}：更多练习见仓库根目录的《仿真实战练习.md》。
+\textbf{前序}：如不熟悉 Pandas，先学《Pandas 数据处理实战手册》。
+\textbf{后续}：平台部署好后，继续学数据分析和可视化。
+\textbf{练习}：见仓库《仿真实战练习.md》和各手册内的实践练习。
 \end{tipbox}
 
 \tableofcontents
