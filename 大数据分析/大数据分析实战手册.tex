@@ -134,7 +134,7 @@
 \end{tipbox}
 
 %========================================
-\section{第一章：数据准备}
+\section{1 数据准备}
 
 \begin{warnbox}[考试提醒]
 考试时数据由题目提供（不是仿真平台的数据），但操作流程完全一样：
@@ -276,7 +276,7 @@ SELECT DISTINCT category FROM user_behavior;
 \end{practicebox}
 
 %========================================
-\section{第二章：数据探索——SQL 基础查询}
+\section{2 数据探索——SQL 基础查询}
 %========================================
 
 \begin{knowledgebox}[这一章要做什么？]
@@ -396,7 +396,7 @@ LIMIT 20;
 \end{lstlisting}
 
 %========================================
-\section{第三章：数据分析实战}
+\section{3 数据分析实战}
 %========================================
 
 \begin{knowledgebox}[这一章要做什么？]
@@ -598,7 +598,7 @@ ORDER BY 日期;
 \end{lstlisting}
 
 %========================================
-\section{第四章：简单机器学习（Spark MLlib）}
+\section{4 简单机器学习（Spark MLlib）}
 %========================================
 
 \begin{knowledgebox}[这一章要做什么？]
@@ -690,7 +690,7 @@ AUC（Area Under Curve）是分类模型的评价指标，取值 0-1：
 \end{tipbox}
 
 %========================================
-\section{第五章：数据导出}
+\section{5 数据导出}
 %========================================
 
 \subsection{导出分析结果}
@@ -734,7 +734,7 @@ plt.show()
 
 
 %========================================
-\section{第六章：从不同数据源读取数据}
+\section{6 从不同数据源读取数据}
 
 \begin{knowledgebox}[为什么要学多种数据源？]
 大数据平台上的数据可能存储在不同地方：
@@ -803,7 +803,7 @@ df.describe().show() # 统计摘要
 df.count()           # 总行数
 \end{lstlisting}
 
-\section{第七章：Spark DataFrame 操作}
+\section{7 Spark DataFrame 操作}
 
 \begin{knowledgebox}[Spark DataFrame 是什么？]
 Spark DataFrame = "分布式版本的 Pandas DataFrame"。语法非常相似，但数据分布在多台机器上并行处理。
@@ -879,7 +879,7 @@ joined.groupBy("category").agg(
 ).show()
 \end{lstlisting}
 
-\section{第八章：用户画像与商品关联分析}
+\section{8 用户画像与商品关联分析}
 
 \begin{knowledgebox}[这一章做什么？]
 除了分析行为数据，还要结合「用户表」和「商品表」做跨表分析。仿真平台提供三张表：
@@ -924,7 +924,7 @@ top = merged2[merged2['event_type']=='buy'].groupby(
 print(top.sort_values('购买次数', ascending=False).head(10))
 \end{lstlisting}
 
-\section{第九章：更多分析场景}
+\section{9 更多分析场景}
 
 \subsection{场景6：RFM 用户价值分析}
 
@@ -984,7 +984,7 @@ ORDER BY 共同用户数 DESC
 LIMIT 20;
 \end{lstlisting}
 
-\section{第十章：数据挖掘——综合应用（本科竞赛要求）}
+\section{10 数据挖掘——综合应用}
 
 \begin{knowledgebox}[综合应用考什么？]
 题目会给你一个数据集和一个问题，要求你综合运用预处理+分析+挖掘来求解。
