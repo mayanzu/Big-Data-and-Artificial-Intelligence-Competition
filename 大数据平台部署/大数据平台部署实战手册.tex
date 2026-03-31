@@ -2000,7 +2000,7 @@ SELECT * FROM user_behavior_hbase LIMIT 10;
 \end{tipbox}
 
 %========================================
-\section{组件参数优化（本科+高职要求）}
+\section{大数据平台参数优化（本科竞赛要求）}
 
 \begin{knowledgebox}[参数优化是什么意思？]
 竞赛不仅要求"部署成功"，还要求"根据题目要求调整参数"。比如：
@@ -2142,59 +2142,6 @@ spark-submit --version  # 查看默认配置
 % Flink（高职要求）
 %========================================
 
-\section{Flink 实时计算引擎（高职要求）}
-
-\begin{knowledgebox}[Flink 是什么？]
-Flink 是一个流处理框架，和 Spark Streaming 类似但更强大。在高职竞赛中，Flink 要求出现在"大数据平台搭建与运维"模块中。
-
-\textbf{和 Spark 的区别}：
-\begin{itemize}
-    \item Spark Streaming：微批处理（每几秒处理一批数据）
-    \item Flink：真正的逐条处理（每条数据来了就处理）
-\end{itemize}
-
-\textbf{竞赛中你需要做的}：下载、安装、配置、启动 Flink，然后写一个简单的 WordCount 程序验证。
-\end{knowledgebox}
-
-\subsection{Flink 安装}
-
-\begin{lstlisting}[language=bash]
-# 下载 Flink
-wget https://repo.huaweicloud.com/apache/flink/flink-1.17.2/flink-1.17.2-bin-scala_2.12.tgz
-
-# 解压
-tar -zxvf flink-1.17.2-bin-scala_2.12.tgz -C /opt/
-ln -s /opt/flink-1.17.2 /opt/flink
-
-# 配置环境变量
-echo 'export FLINK_HOME=/opt/flink' >> /etc/profile
-echo 'export PATH=$FLINK_HOME/bin:$PATH' >> /etc/profile
-source /etc/profile
-\end{lstlisting}
-
-\subsection{Flink 配置与启动}
-
-\begin{lstlisting}[language=bash]
-# 编辑配置
-vi $FLINK_HOME/conf/flink-conf.yaml
-
-# 关键配置
-jobmanager.rpc.address: node1    # JobManager 地址
-taskmanager.memory.process.size: 1024m  # TaskManager 内存
-\end{lstlisting}
-
-\begin{lstlisting}[language=bash]
-# 启动 Flink（standalone 模式）
-start-cluster.sh
-
-# 访问 Web UI
-# http://node1:8081
-
-# 提交 WordCount 任务验证
-flink run $FLINK_HOME/examples/batch/WordCount.jar
-\end{lstlisting}
-
-%========================================
 \section{常用命令速查表}
 %========================================
 %========================================
