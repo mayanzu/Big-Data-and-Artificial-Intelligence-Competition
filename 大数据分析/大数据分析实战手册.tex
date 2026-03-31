@@ -420,6 +420,40 @@ LIMIT 20;
 \end{lstlisting}
 
 %========================================
+\begin{practicebox}[平台实战：用仿真平台数据练习 SQL]
+\begin{lstlisting}[language=bash]
+# 先从平台获取数据并上传 HDFS
+curl -s "http://163.7.1.176:8889/api/export/csv?n=5000" > /tmp/practice.csv
+hdfs dfs -put /tmp/practice.csv /user/data/practice.csv
+
+# 在 Hive 中建表
+hive -e "
+CREATE DATABASE IF NOT EXISTS practice;
+USE practice;
+CREATE TABLE practice_data (
+    timestamp STRING, user_id STRING, event_type STRING,
+    session_id STRING, device STRING, ip STRING,
+    product_id STRING, category STRING, price DOUBLE,
+    page_source STRING, stay_time INT
+)
+ROW FORMAT DELIMITED FIELDS TERMINATED BY ','
+LOCATION '/user/data/';
+"
+\end{lstlisting}
+
+\textbf{用上面的表做以下练习}：
+\begin{lstlisting}[language=SQL]
+-- 练习1：统计各事件类型数量
+SELECT event_type, COUNT(*) FROM practice_data GROUP BY event_type;
+
+-- 练习2：筛选购买记录
+SELECT * FROM practice_data WHERE event_type = 'buy';
+
+-- 练习3：统计各品类平均价格
+SELECT category, AVG(price) FROM practice_data GROUP BY category;
+\end{lstlisting}
+\end{practicebox}
+
 \section{3 数据分析实战}
 %========================================
 

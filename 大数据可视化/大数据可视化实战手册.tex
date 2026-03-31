@@ -261,6 +261,37 @@ plt.show()
 \end{lstlisting}
 
 %========================================
+\begin{practicebox}[平台实战：用仿真平台数据画图]
+\begin{lstlisting}[language=Python]
+import requests, pandas as pd
+import matplotlib.pyplot as plt
+
+plt.rcParams['font.sans-serif'] = ['SimHei']
+plt.rcParams['axes.unicode_minus'] = False
+
+# 获取平台数据
+df = pd.DataFrame(requests.get("http://163.7.1.176:8889/api/data?n=1000").json())
+
+# 练习1：柱状图——各事件类型
+ec = df['event_type'].value_counts()
+plt.figure(figsize=(8,5))
+plt.bar(ec.index, ec.values, color='steelblue')
+plt.title('用户行为分布')
+plt.xlabel('行为类型')
+plt.ylabel('次数')
+plt.savefig('练习1_柱状图.png', dpi=150)
+plt.show()
+
+# 练习2：饼图——品类占比
+cc = df['category'].value_counts()
+plt.figure(figsize=(8,8))
+plt.pie(cc.values, labels=cc.index, autopct='%.1f%%')
+plt.title('品类占比')
+plt.savefig('练习2_饼图.png', dpi=150)
+plt.show()
+\end{lstlisting}
+\end{practicebox}
+
 \section{2 Seaborn 美化}
 %========================================
 

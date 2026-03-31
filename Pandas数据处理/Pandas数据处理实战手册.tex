@@ -442,6 +442,27 @@ print("传感器列表：", df_sensor['sensor_id'].unique())
 \end{practicebox}
 
 %========================================
+\begin{practicebox}[平台实战：用仿真平台数据练习查看与探索]
+\begin{lstlisting}[language=Python]
+import requests, pandas as pd
+
+df = pd.DataFrame(requests.get("http://163.7.1.176:8889/api/data?n=1000").json())
+
+# 练习：查看数据基本信息
+print(df.shape)         # 多少行多少列？
+print(df.dtypes)        # 每列什么类型？
+print(df.isnull().sum())  # 每列多少缺失值？
+
+# 练习：查看数据内容
+print(df.head(10))      # 前10行
+print(df.tail(5))       # 后5行
+
+# 练习：统计信息
+print(df['price'].describe())  # 价格的统计摘要
+print(df['event_type'].value_counts())  # 各事件类型数量
+\end{lstlisting}
+\end{practicebox}
+
 \section{数据选择}
 %========================================
 
@@ -545,6 +566,23 @@ print(f"\n共 {len(missing_age)} 人年龄缺失")
 \end{practicebox}
 
 %========================================
+\begin{practicebox}[平台实战：用仿真平台数据练习选择]
+\begin{lstlisting}[language=Python]
+# 继续使用上面获取的 df
+
+# 练习：选择列
+print(df[['user_id', 'event_type', 'price']].head())
+
+# 练习：条件筛选
+buy_data = df[df['event_type'] == 'buy']
+print(f"购买记录: {len(buy_data)} 条")
+
+# 练习：组合条件
+expensive = df[(df['price'] > 5000) & (df['event_type'] == 'view')]
+print(f"高价浏览: {len(expensive)} 条")
+\end{lstlisting}
+\end{practicebox}
+
 \section{数据清洗：处理缺失值}
 %========================================
 
@@ -1009,6 +1047,21 @@ print(product_stats.head(10))
 \end{practicebox}
 
 %========================================
+\begin{practicebox}[平台实战：用仿真平台数据练习分组统计]
+\begin{lstlisting}[language=Python]
+# 练习：按品类统计
+print(df.groupby('category')['price'].mean().sort_values(ascending=False))
+
+# 练习：按设备统计
+print(df['device'].value_counts())
+
+# 练习：按事件类型和品类交叉统计
+pivot = df.pivot_table(values='price', index='category',
+                       columns='event_type', aggfunc='count', fill_value=0)
+print(pivot)
+\end{lstlisting}
+\end{practicebox}
+
 \section{综合实战：完整数据处理流程}
 %========================================
 
