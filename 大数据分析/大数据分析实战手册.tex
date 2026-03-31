@@ -80,6 +80,10 @@
 /api/products & page, per\_page, category & 商品数据（500个） \\
 /api/join & n=1-500 & 三表关联数据 \\
 /api/export/csv & n=1-10000 & 批量 CSV 导出 \\
+/api/dirty/tsv & n=1-500 & 脏数据 TSV 格式 \\
+/api/dirty/enhanced & n=1-200 & 增强版脏数据（混合编码/日期不一致） \\
+/api/timeseries & days, granularity=hour/day & 时间序列统计 \\
+/api/hive/ddl & table=表名 & 自动生成 Hive 建表 SQL \\
 /api/stats & - & 统计汇总 \\
 \bottomrule
 \end{tabular}
