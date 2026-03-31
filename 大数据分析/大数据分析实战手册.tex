@@ -206,6 +206,9 @@ CREATE EXTERNAL TABLE user_behavior (
 ROW FORMAT SERDE
     'org.apache.hive.hcatalog.data.JsonSerDe'
 LOCATION '/user/data/ecommerce/';
+
+-- 【注意】如果报错 ''JsonSerDe not found''，先执行：
+-- ADD JAR /opt/hive/hcatalog/share/hcatalog/hive-hcatalog-core-3.1.3.jar;
 \end{lstlisting}
 
 \begin{warnbox}[常见错误]
@@ -858,7 +861,52 @@ joined.groupBy("category").agg(
 ).show()
 \end{lstlisting}
 
-\section{第八章：更多分析场景}
+\section{第八章：用户画像与商品关联分析}
+
+\begin{knowledgebox}[这一章做什么？]
+除了分析行为数据，还要结合「用户表」和「商品表」做跨表分析。仿真平台提供三张表：
+\begin{itemize}
+    \item \textbf{行为表}：326,000+ 条用户行为记录
+    \item \textbf{用户表}：1000 个用户画像（年龄/城市/会员等级）
+    \item \textbf{商品表}：500 个商品（品类/价格/评分/销量）
+\end{itemize}
+\end{knowledgebox}
+
+\subsection{用户画像 + 行为关联}
+
+\begin{lstlisting}[language=Python]
+# 获取三种数据
+df_behavior = pd.DataFrame(requests.get("http://163.7.1.176:8889/api/data?n=5000").json())
+df_users = pd.DataFrame(requests.get("http://163.7.1.176:8889/api/users?per_page=1000").json()['data'])
+df_products = pd.DataFrame(requests.get("http://163.7.1.176:8889/api/products?per_page=500").json()['data'])
+
+# 按 user_id 关联
+merged1 = pd.merge(df_behavior, df_users, on='user_id', how='left')
+
+# 不同城市的用户购买偏好
+city_buy = merged1.groupby('city')['event_type'].value_counts().unstack(fill_value=0)
+print(city_buy.sort_values(by='buy', ascending=False).head())
+
+# 不同会员等级消费
+level_stats = merged1[merged1['event_type']=='buy'].groupby('member_level').agg({
+    'price': ['count', 'mean', 'sum']
+})
+print(level_stats)
+\end{lstlisting}
+
+\subsection{商品分析 + 销量关联}
+
+\begin{lstlisting}[language=Python]
+# 按 product_id 关联
+merged2 = pd.merge(df_behavior, df_products, on='product_id', how='left')
+
+# 不同品类被购买次数 TOP10
+top = merged2[merged2['event_type']=='buy'].groupby(
+    ['category_y', 'name_y']).size().reset_index(name='购买次数')
+print(top.sort_values('购买次数', ascending=False).head(10))
+\end{lstlisting}
+
+\section{第九章：更多分析场景}
 
 \subsection{场景6：RFM 用户价值分析}
 
@@ -938,6 +986,10 @@ LIMIT 20;
     \item 没有结论建议
     \item 报告排版混乱
 \end{itemize}
+\end{tipbox}
+
+\begin{tipbox}[配套练习]
+完成分析后，继续练习4、5：\texttt{仿真实战练习.md}
 \end{tipbox}
 
 \section{附录：SQL 速查表}
