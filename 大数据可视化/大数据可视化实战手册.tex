@@ -548,23 +548,87 @@ plt.savefig('analysis_report.png', dpi=150, bbox_inches='tight')
 plt.show()
 \end{lstlisting}
 
-\subsection{步骤3：撰写分析报告}
+\subsection{竞赛综合报告写作指导（评分30分）}
 
-\begin{knowledgebox}[竞赛报告结构模板]
+\begin{knowledgebox}[竞赛评分标准——综合报告]
+竞赛要求提交综合报告，包含 6 个部分：
 \begin{enumerate}
-    \item \textbf{问题描述}（1段）：我们分析了什么问题，为什么重要
-    \item \textbf{数据说明}（1段）：数据来源、数据量、字段含义
-    \item \textbf{分析方法}（1段）：用了什么工具，做了哪些分析
-    \item \textbf{分析结果}（核心，配图表）：每张图配 2-3 句解读
-    \item \textbf{结论建议}（1段）：根据分析结果给出建议
+    \item \textbf{需求分析}：分析业务需求，确定分析目标和关键指标
+    \item \textbf{方案设计}：数据处理和分析方案（数据源 $\rightarrow$ 工具 $\rightarrow$ 流程）
+    \item \textbf{数据操作流程}：数据采集、清洗、分析、可视化的详细步骤
+    \item \textbf{测试报告}：各环节正确性验证，数据流转端到端测试
+    \item \textbf{分析结果}：用图表展示分析结论（核心部分）
+    \item \textbf{结论建议}：基于分析结果的业务建议
 \end{enumerate}
 \end{knowledgebox}
+
+\subsubsection{需求分析模板示例}
+
+\begin{lstlisting}[language=bash]
+【需求分析】
+1. 业务背景：电商平台需要深入了解用户行为以优化推荐和营销
+2. 分析目标：
+   - 了解用户行为分布（浏览/点击/购买）
+   - 发现转化率瓶颈，找到流失环节
+   - 识别高价值用户群体和热门商品
+3. 关键指标：浏览量、购买量、转化率、活跃时段、品类偏好
+\end{lstlisting}
+
+\subsubsection{方案设计模板示例}
+
+\begin{lstlisting}[language=bash]
+【方案设计】
+数据源：云端仿真平台 (API: http://163.7.1.176:8889)
+数据采集：curl 获取数据 → 存入 HDFS
+数据存储：HDFS (原始数据) + HBase (用户画像)
+数据分析：Hive SQL (统计分析) + PySpark (机器学习)
+可视化：Python Matplotlib/Seaborn/Pyecharts
+\end{lstlisting}
+
+\subsubsection{数据操作流程模板示例}
+
+\begin{lstlisting}[language=bash]
+【数据操作流程】
+1. 数据采集：curl -s "http://163.7.1.176:8889/api/data?n=5000"
+2. 数据预处理：Pandas 清洗缺失值、重复值、异常值
+3. 上传 HDFS：hdfs dfs -put behavior.json /user/data/ecommerce/
+4. Hive 建表：CREATE EXTERNAL TABLE user_behavior ...
+5. SQL 分析：SELECT event_type, COUNT(*) FROM ... GROUP BY
+6. 数据导出：hive -e "SELECT ..." > output.csv
+7. 可视化：Python matplotlib/seaborn 生成柱状图、折线图、饼图
+\end{lstlisting}
+
+\subsubsection{测试报告模板}
+
+\begin{lstlisting}[language=bash]
+【测试报告】
+测试项          | 预期结果          | 实际结果    | 状态
+--------------+-------------------+-------------+-----
+HDFS 上传      | 文件存在且可读      | 文件存在     | ✅
+Hive 建表      | 表可用且能查询      | 表可用       | ✅
+SQL 查询       | 返回数据量正确      | 5000条      | ✅
+数据转换       | CSV 格式正确        | 格式正确     | ✅
+图表生成       | 图片清晰有标题      | 生成成功     | ✅
+端到端测试     | 无数据丢失          | 无丢失       | ✅
+\end{lstlisting}
+
+\subsubsection{分析结果与图表展示}
+
+每一张图表应该包含：
+\begin{itemize}
+    \item 图表标题（说明这是什么数据）
+    \item X 轴和 Y 轴标签（说明维度和单位）
+    \item 图例（如果有多个数据系列）
+    \item 2-3 句解读文字（说明从图中看到了什么）
+\end{itemize}
 
 \begin{tipbox}[常见扣分点]
 \begin{itemize}
     \item 只有数字没有图表（图表是必考项）
     \item 图表没有标题和标签（不专业的表现）
     \item 只展示数据不做解读（分析不是数据罗列）
+    \item 没有数据操作流程
+    \item 没有测试报告或测试不完整
     \item 没有结论建议（分析的目的是给建议）
     \item 报告排版混乱（用 Word 排版，字号统一）
 \end{itemize}
