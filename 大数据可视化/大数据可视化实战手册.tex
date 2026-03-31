@@ -62,6 +62,43 @@
 \begin{document}
 \maketitle
 
+\section*{仿真平台 API 参考}
+
+\begin{table}[H]
+\centering
+\caption{仿真平台完整 API（地址：http://163.7.1.176:8889）}
+{\footnotesize
+\begin{tabular}{lll}
+\toprule
+\textbf{接口} & \textbf{参数} & \textbf{说明} \\
+\midrule
+/api/data & n=1-100 & 实时行为数据（干净） \\
+/api/dirty & n=1-200 & 脏数据（含缺失/重复/异常） \\
+/api/dirty/csv & n=1-500 & 脏数据 CSV 格式 \\
+/api/log & lines=1-50 & 逐行 JSON 日志 \\
+/api/history & page, per\_page, event\_type, category & 历史数据分页 \\
+/api/users & page, per\_page & 用户画像（1000人） \\
+/api/products & page, per\_page, category & 商品数据（500个） \\
+/api/join & n=1-500 & 三表关联数据 \\
+/api/export/csv & n=1-10000 & 批量 CSV 导出 \\
+/api/stats & - & 统计汇总 \\
+\bottomrule
+\end{tabular}
+}
+\end{table}
+
+\textbf{Python 获取示例}：
+\begin{lstlisting}[language=Python]
+import requests, pandas as pd
+# 干净数据
+df = pd.DataFrame(requests.get("http://163.7.1.176:8889/api/data?n=500").json())
+# 脏数据
+dirty = pd.DataFrame(requests.get("http://163.7.1.176:8889/api/dirty?n=500").json())
+# 三表关联
+join_data = requests.get("http://163.7.1.176:8889/api/join?n=100").json()
+users = pd.DataFrame(join_data['users'])
+products = pd.DataFrame(join_data['products'])
+\end{lstlisting}
 \section*{竞赛评分标准}
 
 综合报告占 30 分，需包含：需求分析、方案设计、数据操作流程、测试报告、分析结果（图表）、结论建议。详见第四章。

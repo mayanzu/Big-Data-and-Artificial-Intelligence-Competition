@@ -71,11 +71,15 @@
 \toprule
 \textbf{接口} & \textbf{参数} & \textbf{说明} \\
 \midrule
-/api/data & n=1-100 & 实时行为数据 \\
+/api/data & n=1-100 & 实时行为数据（干净） \\
+/api/dirty & n=1-200 & 脏数据（含缺失/重复/异常） \\
+/api/dirty/csv & n=1-500 & 脏数据 CSV 格式 \\
 /api/log & lines=1-50 & 逐行 JSON 日志 \\
-/api/history & page, per\_page, event\_type, category & 历史数据 \\
+/api/history & page, per\_page, category & 历史数据分页 \\
 /api/users & page, per\_page & 用户画像（1000人） \\
 /api/products & page, per\_page, category & 商品数据（500个） \\
+/api/join & n=1-500 & 三表关联数据 \\
+/api/export/csv & n=1-10000 & 批量 CSV 导出 \\
 /api/stats & - & 统计汇总 \\
 \bottomrule
 \end{tabular}
