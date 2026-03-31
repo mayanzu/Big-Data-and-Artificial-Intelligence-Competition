@@ -1103,9 +1103,75 @@ print(df.head())        # 前5行
 print(df.dtypes)        # 数据类型
 \end{lstlisting}
 
-\subsection{数据清洗练习}
+\subsection{数据清洗练习——脏数据实战}
 
-\begin{practicebox}[练习1：从仿真平台获取数据并清洗]
+\begin{practicebox}[练习1：用脏数据练习清洗（模拟比赛场景）]
+比赛时数据"可能不完整、不一致、重复、含噪音"。平台提供了脏数据 API：
+
+\begin{lstlisting}[language=Python]
+import requests
+import pandas as pd
+
+# 获取含脏数据的数据集
+dirty = pd.DataFrame(requests.get(
+    "http://163.7.1.176:8889/api/dirty?n=500").json())
+
+# 检查脏数据情况
+print(dirty.isnull().sum())  # 缺失值统计
+print(dirty.duplicated().sum())  # 重复行数
+print(dirty['price'].describe())  # 价格统计（看是否有异常值）
+
+# 清洗步骤
+dirty_clean = dirty.copy()
+
+# 1. 删除重复行
+dirty_clean = dirty_clean.drop_duplicates()
+print(f"去重后: {len(dirty_clean)} 行")
+
+# 2. 处理缺失值
+dirty_clean['price'] = dirty_clean['price'].fillna(dirty_clean['price'].median())
+dirty_clean['category'] = dirty_clean['category'].fillna('未知')
+dirty_clean['stay_time'] = dirty_clean['stay_time'].fillna(0)
+
+# 3. 处理异常值（IQR法则）
+Q1 = dirty_clean['price'].quantile(0.25)
+Q3 = dirty_clean['price'].quantile(0.75)
+IQR = Q3 - Q1
+dirty_clean['price'] = dirty_clean['price'].clip(
+    lower=max(0, Q1 - 1.5*IQR),
+    upper=Q3 + 1.5*IQR
+)
+
+# 4. 字符串清洗
+dirty_clean['category'] = dirty_clean['category'].str.strip()
+
+print(f"清洗后: {len(dirty_clean)} 行")
+print(dirty_clean.isnull().sum())  # 确认无缺失值
+\end{lstlisting}
+\end{practicebox}
+
+\begin{practicebox}[练习2：CSV 格式数据清洗]
+\begin{lstlisting}[language=Python]
+# 从平台获取 CSV 格式的脏数据
+import requests
+import pandas as pd
+
+response = requests.get("http://163.7.1.176:8889/api/dirty/csv?n=500")
+from io import StringIO
+df = pd.read_csv(StringIO(response.text))
+
+# 清洗
+df = df.dropna(subset=['category'])  # 删除品类为空的行
+df['price'] = pd.to_numeric(df['price'], errors='coerce')  # 强制转数字
+df['stay_time'] = pd.to_numeric(df['stay_time'], errors='coerce')
+
+# 导出清洗后的数据
+df.to_csv('cleaned.csv', index=False)
+print(f"清洗后 {len(df)} 行，已保存为 cleaned.csv")
+\end{lstlisting}
+\end{practicebox}
+
+\begin{practicebox}[练习3：从仿真平台获取数据并清洗（原始练习）]
 \begin{lstlisting}[language=Python]
 import requests
 import pandas as pd

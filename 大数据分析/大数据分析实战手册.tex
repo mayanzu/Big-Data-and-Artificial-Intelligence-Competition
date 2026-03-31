@@ -136,6 +136,30 @@
 %========================================
 \section{1 数据准备}
 
+\begin{knowledgebox}[仿真平台新增 API（预处理练习用）]
+除了基本的 \texttt{/api/data}，平台还提供：
+
+\begin{table}[H]
+\centering
+\footnotesize
+\begin{tabular}{lll}
+\toprule
+\textbf{接口} & \textbf{说明} & \textbf{用途} \\
+\midrule
+/api/dirty & 返回含缺失值/重复值/异常值的数据 & 数据清洗练习 \\
+/api/dirty/csv & 返回含脏数据的 CSV 格式 & 格式转换练习 \\
+/api/join & 返回行为+用户+商品三表数据 & 多表 JOIN 练习 \\
+/api/export/csv?n=5000 & 批量导出 CSV & HDFS 上传练习 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\textbf{脏数据示例}：
+\begin{verbatim}
+价格: None（缺失）  品类: None（缺失）  价格: 999999（异常值）
+\end{verbatim}
+\end{knowledgebox}
+
 \begin{warnbox}[考试提醒]
 考试时数据由题目提供（不是仿真平台的数据），但操作流程完全一样：
 \begin{enumerate}
