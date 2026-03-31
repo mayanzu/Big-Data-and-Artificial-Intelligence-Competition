@@ -113,17 +113,21 @@
 }
 \end{table}
 
-\begin{tipbox}[30天学习路线]
+\begin{tipbox}[准备计划（6-10月，约4个月）]
+
 \textbf{前提}：已学完 Python 基础，了解 Linux 基本命令（cd/ls/vi）
 
 \begin{enumerate}
-    \item \textbf{第 1-5 天}：学 Pandas 数据处理手册
-    \item \textbf{第 6-18 天}：学本手册（部署），重点花时间练习
-    \item \textbf{第 19-25 天}：学数据分析 + 可视化
-    \item \textbf{第 26-30 天}：模拟竞赛（3 小时全流程）
+    \item \textbf{6月}：学 Pandas 数据处理 + 大数据平台部署（重点打基础）
+    \item \textbf{7月}：反复练习部署，做到熟练快速；学数据分析
+    \item \textbf{8月}：学可视化 + 综合应用（数据挖掘）；做完整模拟
+    \item \textbf{9月}：参加网络赛前模拟；查漏补缺
+    \item \textbf{10月}：冲刺准备，打印本手册带进考场
 \end{enumerate}
 
-\textbf{仿真平台}：\texttt{http://163.7.1.176:8889}——所有练习的数据源，提供 326K+ 行为数据、1000 用户画像、500 商品数据。
+\textbf{仿真平台}：\texttt{http://163.7.1.176:8889}——练习用数据源（考试时用题目给的数据，但操作流程一样）。
+
+\textbf{考场提示}：现场赛每队 3 台计算机（一主两从），可以打印材料带入考场。
 \end{tipbox}
 
 \begin{tipbox}[学习指引]
@@ -2000,7 +2004,19 @@ SELECT * FROM user_behavior_hbase LIMIT 10;
 \end{tipbox}
 
 %========================================
-\section{大数据平台参数优化（本科竞赛要求）}
+\section{大数据平台参数优化（本科独立考核模块）}
+
+\begin{warnbox}[重要提醒]
+参数优化是本科组的独立考核模块！考试中可能会要求：
+\begin{itemize}
+    \item 修改 HDFS 副本数（dfs.replication）
+    \item 修改 Spark Executor 内存
+    \item 修改 Kafka 分区数
+    \item 修改 HBase 并发参数
+\end{itemize}
+
+\textbf{修改后一定要验证}：重启服务 + 检查配置是否生效。
+\end{warnbox}
 
 \begin{knowledgebox}[参数优化是什么意思？]
 竞赛不仅要求"部署成功"，还要求"根据题目要求调整参数"。比如：
@@ -2142,7 +2158,11 @@ spark-submit --version  # 查看默认配置
 % Flink（高职要求）
 %========================================
 
-\section{常用命令速查表}
+\section{命令速查表（可打印）}
+
+\begin{tipbox}[考场速查提示]
+以下是竞赛中最常用的命令，建议打印后带入考场。
+\end{tipbox}
 %========================================
 %========================================
 

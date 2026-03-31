@@ -135,6 +135,18 @@
 
 %========================================
 \section{第一章：数据准备}
+
+\begin{warnbox}[考试提醒]
+考试时数据由题目提供（不是仿真平台的数据），但操作流程完全一样：
+\begin{enumerate}
+    \item 把题目给的数据文件上传到 HDFS
+    \item 在 Hive 中创建外部表
+    \item 用 SQL 查询分析
+    \item 导出结果并可视化
+\end{enumerate}
+
+本手册用仿真平台数据练习，但考试时替换为题目给的数据即可。
+\end{warnbox}
 %========================================
 
 \begin{knowledgebox}[这一章要做什么？]
@@ -984,6 +996,27 @@ LIMIT 20;
 \end{lstlisting}
 
 \section{第九章：数据挖掘——综合应用（本科竞赛要求）}
+
+\begin{knowledgebox}[综合应用考什么？]
+题目会给你一个数据集和一个问题，要求你综合运用预处理+分析+挖掘来求解。
+
+\textbf{典型题目}：
+\begin{itemize}
+    \item "分析用户行为数据，预测哪些用户会流失"
+    \item "分析商品销售数据，找出关联商品"
+    \item "分析用户画像数据，将用户分群"
+\end{itemize}
+
+\textbf{解题思路}：
+\begin{enumerate}
+    \item 读取数据（HDFS → Hive → Spark）
+    \item 数据预处理（清洗 + 特征工程）
+    \item 选择算法（分类/聚类/关联）
+    \item 训练模型（Spark MLlib）
+    \item 评估结果 + 可视化
+    \item 撰写报告
+\end{enumerate}
+\end{knowledgebox}
 
 \begin{knowledgebox}[数据挖掘是什么意思？]
 数据挖掘 = 从大量数据中发现隐藏的规律和模式。竞赛要求"综合应用数据预处理、分析与挖掘技术求解给定问题"。
