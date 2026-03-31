@@ -631,7 +631,70 @@ SQL 查询       | 返回数据量正确      | 5000条      | ✅
 \end{itemize}
 \end{tipbox}
 
-\section{第五章：Pyecharts 交互式图表}
+\section{第五章：实际图表效果展示}
+
+\begin{knowledgebox}[以下图表由仿真平台真实数据生成]
+所有图表基于云端仿真平台实时数据（http://163.7.1.176:8889），用 Python Matplotlib 绘制。
+学生在练习时可以复现这些效果。
+\end{knowledgebox}
+
+\subsection{图1：行为类型分布（柱状图）}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.85\textwidth]{charts/01_behavior_distribution.png}
+\caption{各行为类型次数分布——浏览(view)最多，购买(buy)最少，说明大量用户流失}
+\end{figure}
+
+\subsection{图2：品类浏览量 vs 购买量（对比柱状图）}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.9\textwidth]{charts/02_category_views_vs_buys.png}
+\caption{各品类浏览量远高于购买量，转化率最高的品类是珠宝首饰，最低的是图书音像}
+\end{figure}
+
+\subsection{图3：品类占比（饼图）}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.7\textwidth]{charts/03_category_pie.png}
+\caption{15个品类数据量分布，各品类数据量较均匀}
+\end{figure}
+
+\subsection{图4：设备类型分布（横向柱状图）}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.85\textwidth]{charts/04_device_distribution.png}
+\caption{设备类型分布，iOS/Android/PC各占约20\%，H5和小程序各占约15\%-20\%}
+\end{figure}
+
+\subsection{图5：用户转化漏斗}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.85\textwidth]{charts/05_conversion_funnel.png}
+\caption{漏斗分析：浏览$\to$加购$\to$购买，每一步的用户流失情况}
+\end{figure}
+
+\subsection{图6：来源页面分布}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.85\textwidth]{charts/06_source_distribution.png}
+\caption{用户来源页面分布，推荐页和搜索页是主要入口}
+\end{figure}
+
+\subsection{图7：综合仪表盘（四合一）}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.95\textwidth]{charts/07_dashboard.png}
+\caption{竞赛报告中的仪表盘样式——四张图表组合在一个页面，适合提交报告时使用}
+\end{figure}
+
+\section{第六章：Pyecharts 交互式图表}
 %========================================
 
 \begin{knowledgebox}[Pyecharts 是什么？]
