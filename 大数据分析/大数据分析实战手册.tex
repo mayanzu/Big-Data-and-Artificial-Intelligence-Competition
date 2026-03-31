@@ -127,8 +127,8 @@
 \begin{tipbox}[分析流程一图看懂]
 \begin{footnotesize}
 \begin{verbatim}
-[HDFS数据] -> [Hive建表] -> [SQL分析] -> [导出] -> [报告]
-  原材料       标签系统     医生诊断     报告     论文
+[HDFS数据] -> [Hive建表] -> [SQL分析] -> [导出] -> [可视化]
+  原材料       标签系统     医生诊断     结果     可视化
 \end{verbatim}
 \end{footnotesize}
 \end{tipbox}
@@ -690,7 +690,7 @@ AUC（Area Under Curve）是分类模型的评价指标，取值 0-1：
 \end{tipbox}
 
 %========================================
-\section{第五章：数据导出与报告}
+\section{第五章：数据导出}
 %========================================
 
 \subsection{导出分析结果}
@@ -731,18 +731,7 @@ plt.savefig('event_distribution.png', dpi=150)
 plt.show()
 \end{lstlisting}
 
-\subsection{竞赛报告框架}
 
-\begin{knowledgebox}[报告应该包含什么？]
-竞赛报告是评分的重要部分（占 30 分）。一份好的报告应包含：
-\begin{enumerate}
-    \item \textbf{问题描述}：你分析了什么问题
-    \item \textbf{数据说明}：数据来源、字段含义、数据量
-    \item \textbf{分析方法}：用了什么工具、什么 SQL 查询
-    \item \textbf{分析结果}：图表 + 数字 + 文字说明
-    \item \textbf{结论建议}：根据分析结果，给出什么建议
-\end{enumerate}
-\end{knowledgebox}
 
 %========================================
 \section{第六章：从不同数据源读取数据}
@@ -1014,7 +1003,7 @@ LIMIT 20;
     \item 选择算法（分类/聚类/关联）
     \item 训练模型（Spark MLlib）
     \item 评估结果 + 可视化
-    \item 撰写报告
+    
 \end{enumerate}
 \end{knowledgebox}
 
@@ -1101,32 +1090,6 @@ result.groupBy("prediction").agg(
     avg("购买").alias("平均购买数")
 ).show()
 \end{lstlisting}
-
-\section{第十一章：竞赛报告写作指导}
-
-\begin{knowledgebox}[报告结构模板（5 部分）]
-\begin{enumerate}
-    \item \textbf{问题描述}（200字）：我们分析了什么问题，为什么重要
-    \item \textbf{数据说明}（200字）：数据来源（仿真平台）、数据量、字段含义
-    \item \textbf{分析方法}（200字）：用了 Hive SQL + Spark + Python，做了哪些分析
-    \item \textbf{分析结果}（核心，配图表）：每张图配 2-3 句解读
-    \item \textbf{结论建议}（200字）：根据分析给出业务建议
-\end{enumerate}
-\end{knowledgebox}
-
-\begin{tipbox}[常见扣分点]
-\begin{itemize}
-    \item 只有数字没有图表
-    \item 图表没有标题和坐标轴标签
-    \item 只展示数据不做解读
-    \item 没有结论建议
-    \item 报告排版混乱
-\end{itemize}
-\end{tipbox}
-
-\begin{tipbox}[配套练习]
-完成分析后，继续做本手册第九章的数据挖掘练习。
-\end{tipbox}
 
 \section{附录：SQL 速查表}
 %========================================
