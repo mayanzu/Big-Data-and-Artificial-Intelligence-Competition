@@ -1,0 +1,2488 @@
+\documentclass[12pt,a4paper]{article}
+\usepackage[UTF8]{ctex}
+\usepackage{geometry}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{hyperref}
+\usepackage{booktabs}
+\usepackage{float}
+\usepackage{tcolorbox}
+\usepackage{enumitem}
+\usepackage{graphicx}
+\usepackage{longtable}
+
+\geometry{left=2.5cm,right=2.5cm,top=2.5cm,bottom=2.5cm}
+
+\lstset{
+    language=bash,
+    basicstyle=\ttfamily\small,
+    keywordstyle=\color{blue}\bfseries,
+    commentstyle=\color{gray},
+    stringstyle=\color{orange},
+    numbers=left,
+    numberstyle=\tiny\color{gray},
+    stepnumber=1,
+    numbersep=8pt,
+    backgroundcolor=\color{gray!10},
+    frame=single,
+    frameround=fttt,
+    breaklines=true,
+    showstringspaces=false,
+    tabsize=4,
+    captionpos=b,
+    xleftmargin=2em,
+    xrightmargin=1em,
+    aboveskip=1em,
+    belowskip=1em
+}
+
+\tcbuselibrary{skins,breakable}
+\newtcolorbox{knowledgebox}[1][]{
+    colback=blue!5!white,
+    colframe=blue!50!black,
+    fonttitle=\bfseries,
+    title=#1,
+    breakable
+}
+
+\newtcolorbox{practicebox}[1][]{
+    colback=green!5!white,
+    colframe=green!50!black,
+    fonttitle=\bfseries,
+    title=#1,
+    breakable
+}
+
+\newtcolorbox{tipbox}[1][]{
+    colback=yellow!10!white,
+    colframe=orange!70!black,
+    fonttitle=\bfseries,
+    title=#1,
+    breakable
+}
+
+\newtcolorbox{theorybox}[1][]{
+    colback=purple!5!white,
+    colframe=purple!70!black,
+    fonttitle=\bfseries,
+    title=#1,
+    breakable
+}
+
+\newtcolorbox{warnbox}[1][]{
+    colback=red!5!white,
+    colframe=red!70!black,
+    fonttitle=\bfseries,
+    title=#1,
+    breakable
+}
+
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    filecolor=magenta,      
+    urlcolor=cyan,
+    bookmarks=true,
+    pdfstartview=FitH
+}
+
+\title{\textbf{大数据平台部署实战手册}\\[0.5em]\large 从零基础到竞赛实战}
+\author{竞赛培训组}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+
+\section*{竞赛总览}
+
+\begin{table}[H]
+\centering
+\caption{竞赛评分标准}
+{\footnotesize
+\begin{tabular}{llll}
+\toprule
+\textbf{模块} & \textbf{内容} & \textbf{分值} & \textbf{对应手册} \\
+\midrule
+大数据平台部署 & 平台部署、参数调整、可用性测试、联调 & 10分 & 本手册 \\
+数据预处理 & 脏数据清洗、格式转换、准确性/完整性 & 30分 & Pandas数据处理 \\
+数据分析 & 在已部署平台上做统计分析、挖掘规律 & 30分 & 大数据分析 \\
+综合报告 & 需求分析、方案设计、测试报告、结果展示 & 30分 & 大数据可视化 \\
+\bottomrule
+\end{tabular}
+}
+\end{table}
+
+\begin{tipbox}[准备计划（6-10月，约4个月）]
+
+\textbf{前提}：已学完 Python 基础，了解 Linux 基本命令（cd/ls/vi）
+
+\begin{enumerate}
+    \item \textbf{6月}：学 Pandas 数据处理 + 大数据平台部署（重点打基础）
+    \item \textbf{7月}：反复练习部署，做到熟练快速；学数据分析
+    \item \textbf{8月}：学可视化 + 综合应用（数据挖掘）；做完整模拟
+    \item \textbf{9月}：参加网络赛前模拟；查漏补缺
+    \item \textbf{10月}：冲刺准备，打印本手册带进考场
+\end{enumerate}
+
+\textbf{仿真平台}：\texttt{http://163.7.1.176:8889}——练习用数据源（考试时用题目给的数据，但操作流程一样）。
+
+\textbf{考场提示}：现场赛每队 3 台计算机（一主两从），可以打印材料带入考场。
+\end{tipbox}
+
+\begin{tipbox}[学习指引]
+\textbf{前序}：如不熟悉 Pandas，先学《Pandas 数据处理实战手册》。
+\textbf{后续}：平台部署好后，继续学数据分析和可视化。
+\textbf{练习}：见本手册内各章节的实践练习。
+\end{tipbox}
+
+\tableofcontents
+\newpage
+
+%========================================
+\section{前言：为什么要学习大数据平台部署？}
+%========================================
+
+\begin{theorybox}[什么是大数据平台？]
+\textbf{大数据平台}是一套用于存储、处理和分析海量数据的软件系统集合。在竞赛中，大数据平台部署是考察学生实际操作能力的重要环节。
+
+\textbf{核心组件：}
+\begin{itemize}
+    \item \textbf{Hadoop}：分布式计算框架，包含HDFS和YARN
+    \item \textbf{HDFS}：分布式文件系统，用于存储海量数据
+    \item \textbf{HBase}：分布式NoSQL数据库
+    \item \textbf{Hive}：数据仓库工具，提供SQL查询能力
+    \item \textbf{Spark}：快速通用的大数据计算引擎
+    \item \textbf{Zookeeper}：分布式协调服务
+    \item \textbf{Kafka}：高吞吐量消息队列
+    \item \textbf{Flume}：数据采集工具
+    \item \textbf{ClickHouse}：列式数据库，用于OLAP分析
+\end{itemize}
+\end{theorybox}
+
+\begin{knowledgebox}[竞赛中的大数据平台部署]
+在竞赛中，大数据平台部署部分要求参赛选手：
+\begin{enumerate}
+    \item 根据题目要求完成大数据平台的部署
+    \item 包括但不限于Hadoop、HDFS、HBase、Hive、Spark、Zookeeper、Flume、Kafka、ClickHouse等
+    \item 能够根据要求对部署的平台参数进行调整
+    \item 测试平台可用性，对多个平台进行联调、联测
+    \item 实现数据在平台中的流转
+\end{enumerate}
+\end{knowledgebox}
+
+%========================================
+\section{竞赛准备指南：理解每个组件}
+%========================================
+
+
+\subsection{全局视角：数据是怎么流的？}
+
+\begin{theorybox}[一句话理解整个系统]
+大数据平台就是一个"数据加工厂"，数据从原材料（日志）到成品（统计报告）经过 6 道工序：
+
+\begin{footnotesize}
+\begin{verbatim}
+[日志文件] --> [Flume] --> [Kafka] --> [Spark] --> [HBase/CH] --> [Hive]
+ 原材料      搬运工     传送带    加工车间    成品仓库      质检报告
+\end{verbatim}
+\end{footnotesize}
+\end{theorybox}
+
+\subsection{每个组件用一句话说清楚}
+
+\begin{table}[H]
+\centering
+\caption{组件速查表}
+{\footnotesize
+\begin{tabular}{llll}
+\toprule
+\textbf{组件} & \textbf{一句话解释} & \textbf{类比} & \textbf{部署在哪} \\
+\midrule
+HDFS & 分布式硬盘，切块存多台 & 拼图仓库 & node1(NN), node2/3(DN) \\
+YARN & 调度中心，分配CPU/内存 & 食堂阿姨 & node1(RM), node2/3(NM) \\
+Zookeeper & 分布式班长，协调各组件 & 选班长 & 三台都装 \\
+HBase & 按关键词快速查海量数据 & 通讯录 & node1(HM), node2/3(HRS) \\
+Hive & SQL翻译器，查HDFS数据 & 标签系统 & node1 \\
+Spark & 内存计算，比MR快百倍 & 草稿纸 & node1(M), node2/3(W) \\
+Kafka & 消息传送带，缓冲数据 & 传送带 & node1 \\
+Flume & 数据搬运工，日志到Kafka & 搬家公司 & node1 \\
+ClickHouse & 超级统计表，分析极快 & 超级Excel & node2 \\
+\bottomrule
+\end{tabular}
+}
+\end{table}
+
+\subsection{它们之间怎么配合？}
+
+\begin{knowledgebox}[数据流转详解（考试必考）]
+\textbf{场景}：电商网站产生用户行为日志，需要实时统计每个用户的行为次数。
+
+\begin{enumerate}
+    \item \textbf{数据产生}：用户在网站上点击、浏览、购买，操作被记录到日志文件
+    \item \textbf{Flume 采集}：Flume 的 Source 监控日志文件，发现新数据就读取出来
+    \item \textbf{Kafka 缓冲}：Flume 把数据发送到 Kafka Topic（名为 user-behavior），数据暂存在 Kafka 中
+    \item \textbf{Spark 处理}：Spark Streaming 从 Kafka 消费数据，实时统计每个用户每种行为的次数
+    \item \textbf{HBase 存储}：统计结果写入 HBase，方便按用户 ID 快速查询
+    \item \textbf{ClickHouse 分析}：统计结果也写入 ClickHouse，方便按品类、时间做统计分析
+    \item \textbf{Hive 离线查询}：Hive 把 HBase 中的数据映射成表格，用 SQL 做复杂查询
+\end{enumerate}
+\end{knowledgebox}
+
+\begin{tipbox}[竞赛中的常见考法]
+\begin{itemize}
+    \item 考法 1：给定组件列表，让你按正确顺序启动（答案：ZK $\rightarrow$ HDFS $\rightarrow$ Kafka $\rightarrow$ 其他）
+    \item 考法 2：给定数据流图，让你配置 Flume、Kafka、Spark 实现数据流转
+    \item 考法 3：某个组件启动失败，让你排查原因（看日志！）
+    \item 考法 4：调整参数（比如 HDFS 副本数、Kafka 分区数）并验证效果
+    \item 考法 5：创建 Hive 表映射 HBase 数据，用 SQL 查询
+\end{itemize}
+\end{tipbox}
+
+%========================================
+\section{环境准备}
+%========================================
+
+\subsection{硬件与系统要求}
+
+\begin{table}[H]
+\centering
+\caption{硬件配置要求}
+\begin{tabular}{lcc}
+\toprule
+\textbf{组件} & \textbf{最低配置} & \textbf{推荐配置} \\
+\midrule
+CPU & 4核 & 8核+ \\
+内存 & 8GB & 16GB+ \\
+磁盘 & 50GB & 100GB+ \\
+系统 & CentOS 7/Ubuntu 18.04 & CentOS 7/Ubuntu 20.04 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{组件版本兼容性}
+
+\begin{table}[H]
+\centering
+\caption{组件版本兼容性参考（基于 3 节点 CentOS 7/Ubuntu 20.04）}
+\begin{tabular}{llll}
+\toprule
+\textbf{组件} & \textbf{本手册版本} & \textbf{依赖组件} & \textbf{注意事项} \\
+\midrule
+JDK & 8u212 & - & 所有组件共用 \\
+Hadoop & 3.3.4 & JDK 8+ & \\
+Zookeeper & 3.7.1 & JDK 8+ & \\
+HBase & 2.4.15 & HDFS + Zookeeper 3.5-3.7 & \\
+Hive & 3.1.3 & HDFS + MySQL 5.7+ & 需 MySQL JDBC 8.x 驱动 \\
+Spark & 3.3.2 & JDK 8+ + HDFS & 预编译含 Hadoop 依赖 \\
+Kafka & 3.4.0 & Zookeeper & \\
+Flume & 1.11.0 & Kafka + JDK 8+ & \\
+ClickHouse & 22.x+ & - & 独立安装 \\
+MySQL & 5.7+ & - & Hive 元数据存储 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{warnbox}[重要]
+\begin{itemize}
+    \item Zookeeper 版本必须与 HBase 兼容：HBase 2.4.x 要求 Zookeeper 3.5-3.7
+    \item Hive 与 Spark 联用时，需确保依赖包版本一致
+    \item MySQL JDBC 驱动需使用 8.0+ 版本（如 mysql-connector-java-8.0.33.jar）
+\end{itemize}
+\end{warnbox}
+
+\subsection{集群节点规划}
+
+\begin{theorybox}[一主两从集群规划（竞赛标准配置）]
+竞赛环境中，使用 3 台服务器组成集群。以下为完整的服务分配方案：
+
+\begin{table}[H]
+\centering
+\caption{节点角色与服务分配}
+{\small
+\begin{tabular}{llll}
+\toprule
+\textbf{主机名} & \textbf{IP} & \textbf{角色} & \textbf{部署服务} \\
+\midrule
+node1 & 192.168.1.101 & Master & NameNode, SecondaryNameNode \\
+      &               &        & ResourceManager, HMaster \\
+      &               &        & HiveServer2, Spark Master \\
+      &               &        & Zookeeper, Kafka, Flume \\
+\midrule
+node2 & 192.168.1.102 & Worker & DataNode, NodeManager \\
+      &               &        & HRegionServer, Spark Worker \\
+      &               &        & Zookeeper, ClickHouse \\
+\midrule
+node3 & 192.168.1.103 & Worker & DataNode, NodeManager \\
+      &               &        & HRegionServer, Spark Worker \\
+      &               &        & Zookeeper \\
+\bottomrule
+\end{tabular}
+}
+\end{table}
+
+\textbf{记忆口诀}：
+\begin{itemize}
+    \item \textbf{Master 服务}只装在 node1（NameNode、ResourceManager、HMaster）
+    \item \textbf{Worker 服务}装在 node2 和 node3（DataNode、NodeManager）
+    \item \textbf{Zookeeper} 三台都要装（需组成集群选 Leader）
+    \item \textbf{Kafka} 只装在 node1（竞赛环境单 Broker 足够）
+    \item \textbf{Flume} 装在 node1（和 Kafka 在同一台）
+\end{itemize}
+\end{theorybox}
+
+\begin{tipbox}[竞赛中的操作流程]
+
+在开始部署之前，先用浏览器打开数据仿真平台看看数据：
+
+\texttt{http://163.7.1.176:8889}
+
+你会看到实时数据流、事件分布、品类统计。这是所有练习的数据源。
+在竞赛中，你会拿到 3 台已装好系统的服务器。操作顺序：
+
+\begin{enumerate}
+    \item \textbf{基础环境}（本节）：改主机名、配 hosts、关防火墙、装 JDK、配 SSH 免密
+    \item \textbf{逐个部署组件}（后续章节）：Zookeeper $\rightarrow$ Hadoop $\rightarrow$ HBase $\rightarrow$ Hive $\rightarrow$ Spark $\rightarrow$ Kafka $\rightarrow$ Flume $\rightarrow$ ClickHouse
+    \item \textbf{联调测试}（实战章节）：启动数据流，验证端到端
+\end{enumerate}
+
+\textbf{重要}：每一步都标明了"在哪个节点上执行"：
+\begin{itemize}
+    \item \texttt{\# 【在 node1 上执行】} = 只在这一个节点操作
+    \item \texttt{\# 【所有节点】} = 三台都要执行
+\end{itemize}
+\end{tipbox}
+
+\subsection{基础环境配置}
+
+\subsubsection{修改主机名}
+
+\begin{lstlisting}[language=bash]
+# 在node1上执行
+hostnamectl set-hostname node1
+
+# 在node2上执行
+hostnamectl set-hostname node2
+
+# 在node3上执行
+hostnamectl set-hostname node3
+\end{lstlisting}
+
+\subsubsection{配置hosts文件}
+
+\begin{lstlisting}[language=bash]
+# 编辑 /etc/hosts，所有节点保持一致
+vi /etc/hosts
+
+# 添加以下内容
+192.168.1.101 node1
+192.168.1.102 node2
+192.168.1.103 node3
+\end{lstlisting}
+
+\begin{warnbox}[注意]
+所有节点的hosts文件必须保持一致，否则组件间通信会失败！
+\end{warnbox}
+
+\subsubsection{关闭防火墙和SELinux}
+
+\begin{lstlisting}[language=bash]
+# 关闭防火墙
+systemctl stop firewalld
+systemctl disable firewalld
+
+# 关闭SELinux
+setenforce 0
+sed -i 's/SELINUX=enforcing/SELINUX=disabled/g' /etc/selinux/config
+\end{lstlisting}
+
+\subsubsection{配置SSH免密登录}
+
+\begin{theorybox}[为什么要配置SSH免密？]
+Hadoop 启动时，node1 需要通过 SSH 远程在 node2、node3 上启动 DataNode。如果没有免密，每次都要输入密码，启动脚本就无法自动运行。
+\end{theorybox}
+
+\begin{lstlisting}[language=bash]
+# 【在 node1 上执行】生成密钥对
+ssh-keygen -t rsa -P '' -f ~/.ssh/id_rsa
+
+# 【在 node1 上执行】把公钥发给所有节点（包括自己）
+ssh-copy-id node1
+ssh-copy-id node2
+ssh-copy-id node3
+
+# 【在 node1 上执行】测试免密登录
+ssh node2 hostname  # 应显示 node2，不需密码
+ssh node3 hostname  # 应显示 node3，不需密码
+\end{lstlisting}
+
+\begin{tipbox}[如果 ssh-copy-id 失败]
+\begin{lstlisting}[language=bash]
+# 在 node1 上读取公钥
+cat ~/.ssh/id_rsa.pub
+
+# 在 node2、node3 上手动添加
+mkdir -p ~/.ssh && chmod 700 ~/.ssh
+echo "ssh-rsa AAAA..." >> ~/.ssh/authorized_keys
+chmod 600 ~/.ssh/authorized_keys
+\end{lstlisting}
+\end{tipbox}
+
+\subsubsection{安装JDK}
+
+\begin{lstlisting}[language=bash]
+# 上传JDK安装包并解压
+tar -zxvf jdk-8u212-linux-x64.tar.gz -C /opt/
+
+# 配置环境变量
+vi /etc/profile
+
+# 添加以下内容
+export JAVA_HOME=/opt/jdk1.8.0_212
+export PATH=$JAVA_HOME/bin:$PATH
+export CLASSPATH=.:$JAVA_HOME/lib/dt.jar:$JAVA_HOME/lib/tools.jar
+
+# 使配置生效
+source /etc/profile
+
+# 验证安装
+java -version
+\end{lstlisting}
+
+\begin{practicebox}[动手练习]
+\begin{enumerate}
+    \item 完成3台服务器的hosts文件配置
+    \item 配置SSH免密登录，确保node1可以免密登录到node2和node3
+    \item 安装JDK并验证版本
+\end{enumerate}
+\end{practicebox}
+
+%========================================
+\section{Hadoop集群部署}
+%========================================
+
+\subsection{Hadoop是什么？}
+
+\begin{theorybox}[用快递仓库理解 Hadoop]
+想象你要管理一个巨大的快递仓库：
+\begin{itemize}
+    \item 一个仓库放不下所有包裹 $\rightarrow$ 需要多个仓库（分布式存储 = HDFS）
+    \item 多个仓库需要有人调度谁去哪个仓库取货（资源调度 = YARN）
+    \item 取货的路线需要规划（计算框架 = MapReduce）
+\end{itemize}
+
+\textbf{一句话总结}：Hadoop 让你用很多台普通电脑协同工作，处理一台电脑处理不了的海量数据。
+\end{theorybox}
+
+\begin{knowledgebox}[Hadoop 的三大核心组件]
+\begin{itemize}
+    \item \textbf{HDFS}（Hadoop Distributed File System）：分布式文件系统，把大文件切成小块分散存到不同机器上
+    \item \textbf{YARN}（Yet Another Resource Negotiator）：资源调度器，决定哪个任务用哪台机器的 CPU 和内存
+    \item \textbf{MapReduce}：编程模型，把一个大计算任务拆成"分（Map）"和"合（Reduce）"两步并行执行
+\end{itemize}
+
+\textbf{竞赛中你需要做的}：在 node1 上配置 Hadoop，然后用启动脚本自动把 DataNode 分发到 node2、node3 上。
+\end{knowledgebox}
+
+\subsection{Hadoop简介}
+
+\begin{theorybox}[Hadoop核心组件]
+\textbf{Hadoop}是一个开源的分布式计算框架，核心组件包括：
+\begin{itemize}
+    \item \textbf{HDFS}：分布式文件系统，用于存储海量数据
+    \item \textbf{YARN}：资源调度框架，负责集群资源管理
+    \item \textbf{MapReduce}：分布式计算框架
+\end{itemize}
+\end{theorybox}
+
+\subsection{下载与解压}
+
+\begin{lstlisting}[language=bash]
+# 下载Hadoop（以3.3.4版本为例）
+# 如果从 PDF 复制 URL 有空格，手动删除空格后粘贴
+wget https://repo.huaweicloud.com/apache/hadoop/common/hadoop-3.3.4/hadoop-3.3.4.tar.gz
+
+# 解压到/opt目录
+tar -zxvf hadoop-3.3.4.tar.gz -C /opt/
+
+# 创建软链接
+ln -s /opt/hadoop-3.3.4 /opt/hadoop
+\end{lstlisting}
+
+\subsection{配置环境变量}
+
+\begin{lstlisting}[language=bash]
+vi /etc/profile
+
+# 添加Hadoop环境变量
+export HADOOP_HOME=/opt/hadoop
+export PATH=$HADOOP_HOME/bin:$HADOOP_HOME/sbin:$PATH
+
+# 使配置生效
+source /etc/profile
+
+# 验证
+hadoop version
+\end{lstlisting}
+
+\subsection{修改Hadoop配置文件}
+
+配置文件位于 \texttt{\$HADOOP\_HOME/etc/hadoop/} 目录下。
+
+\subsubsection{hadoop-env.sh——告诉Hadoop用哪个Java}
+
+\begin{knowledgebox}[这个文件是干什么的？]
+\texttt{hadoop-env.sh} 是 Hadoop 的"环境变量配置文件"。Hadoop 是用 Java 写的，所以它必须知道 Java 装在哪里。
+
+\textbf{类比}：就像你在 Windows 上安装软件时，如果软件找不到安装路径，你就需要手动指定。这个文件就是告诉 Hadoop："Java 装在 /opt/jdk1.8.0\_212 这个目录下"。
+\end{knowledgebox}
+
+\begin{lstlisting}[language=bash]
+# 打开配置文件
+vi $HADOOP_HOME/etc/hadoop/hadoop-env.sh
+
+# ====== 第1个配置：告诉Hadoop Java装在哪里 ======
+# 如果不配置，Hadoop 会报错 "JAVA_HOME is not set"
+export JAVA_HOME=/opt/jdk1.8.0_212
+# 注意：这里要写你实际安装的 JDK 路径
+# 查看方法：在终端执行 echo $JAVA_HOME 或 which java
+
+# ====== 第2个配置：允许用root用户运行 ======
+# Hadoop 默认不允许用 root 用户启动（出于安全考虑）
+# 竞赛中通常用 root 用户，所以需要显式允许
+export HDFS_NAMENODE_USER=root       # 允许root运行NameNode
+export HDFS_DATANODE_USER=root       # 允许root运行DataNode
+export HDFS_SECONDARYNAMENODE_USER=root  # 允许root运行SecondaryNameNode
+export YARN_RESOURCEMANAGER_USER=root    # 允许root运行ResourceManager
+export YARN_NODEMANAGER_USER=root        # 允许root运行NodeManager
+\end{lstlisting}
+
+\subsubsection{core-site.xml——告诉Hadoop NameNode在哪里}
+
+\begin{knowledgebox}[这个文件是干什么的？]
+\texttt{core-site.xml} 是 Hadoop 的"核心配置文件"，相当于 Hadoop 的"身份证"。
+
+\textbf{最重要的一个配置}：\texttt{fs.defaultFS}——告诉所有组件"NameNode 在哪台机器上"。所有 HDFS 操作（上传、下载、读取文件）都要先问 NameNode："这个文件存在哪里？"
+
+\textbf{类比}：就像你去图书馆找书，首先要查"图书目录"（NameNode），目录告诉你书在哪个书架（DataNode）。
+\end{knowledgebox}
+
+\begin{lstlisting}[language=XML]
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet type="text/xsl" href="configuration.xsl"?>
+<configuration>
+    <!-- ====== 配置1：NameNode地址（最重要！） ====== -->
+    <!-- fs.defaultFS = "文件系统的默认地址" -->
+    <!-- hdfs:// 表示使用 HDFS 协议 -->
+    <!-- node1:9000 表示 NameNode 在 node1 的 9000 端口 -->
+    <!-- 如果这个地址写错，整个 HDFS 就连不上！ -->
+    <property>
+        <name>fs.defaultFS</name>
+        <value>hdfs://node1:9000</value>
+    </property>
+    
+    <!-- ====== 配置2：Hadoop临时目录 ====== -->
+    <!-- Hadoop 运行时产生的临时文件存放位置 -->
+    <!-- 包括 NameNode 的元数据、DataNode 的数据块等 -->
+    <!-- 建议放在空间大的磁盘分区 -->
+    <property>
+        <name>hadoop.tmp.dir</name>
+        <value>/opt/hadoop/tmp</value>
+    </property>
+    
+    <!-- ====== 配置3：Web界面用户 ====== -->
+    <!-- 访问 HDFS Web 界面 (http://node1:9870) 时显示的用户名 -->
+    <!-- 设为 root 方便查看 -->
+    <property>
+        <name>hadoop.http.staticuser.user</name>
+        <value>root</value>
+    </property>
+</configuration>
+\end{lstlisting}
+
+\subsubsection{hdfs-site.xml——配置HDFS存储策略}
+
+\begin{knowledgebox}[这个文件是干什么的？]
+\texttt{hdfs-site.xml} 是 HDFS（分布式文件系统）的专用配置文件。它告诉 Hadoop：
+
+\begin{itemize}
+    \item 文件存在哪里（namenode 目录、datanode 目录）
+    \item 每个数据块存几份（副本数）
+    \item SecondaryNameNode 在哪
+\end{itemize}
+
+\textbf{最重要的是副本数}：默认 3 份。比如你上传一个文件，HDFS 会自动在 3 台机器上各存一份，这样即使 1 台坏了，数据还在。
+\end{knowledgebox}
+
+\begin{lstlisting}[language=XML]
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet type="text/xsl" href="configuration.xsl"?>
+<configuration>
+    <!-- ====== 配置1：NameNode元数据存储目录 ====== -->
+    <!-- 元数据 = "文件的目录信息"（哪个文件存在哪台机器上） -->
+    <!-- 这个目录非常重要！丢失意味着所有文件找不到 -->
+    <property>
+        <name>dfs.namenode.name.dir</name>
+        <value>file:/opt/hadoop/data/namenode</value>
+    </property>
+    
+    <!-- ====== 配置2：DataNode数据块存储目录 ====== -->
+    <!-- 实际的文件数据块存在这个目录下 -->
+    <!-- 建议放在空间大的磁盘上 -->
+    <property>
+        <name>dfs.datanode.data.dir</name>
+        <value>file:/opt/hadoop/data/datanode</value>
+    </property>
+    
+    <!-- ====== 配置3：副本数（重要！） ====== -->
+    <!-- 每个数据块存几份副本 -->
+    <!-- 3 = 存3份（生产环境标准） -->
+    <!-- 竞赛中如果只有3台机器，设3没问题 -->
+    <!-- 如果只有1台机器测试，设1 -->
+    <property>
+        <name>dfs.replication</name>
+        <value>3</value>
+    </property>
+    
+    <!-- ====== 配置4：SecondaryNameNode地址 ====== -->
+    <!-- SecondaryNameNode 帮 NameNode 合并编辑日志 -->
+    <!-- 通常放在和 NameNode 不同的机器上（竞赛中可放同台） -->
+    <property>
+        <name>dfs.namenode.secondary.http-address</name>
+        <value>node1:9868</value>
+    </property>
+</configuration>
+\end{lstlisting}
+
+\subsubsection{yarn-site.xml——配置资源调度器}
+
+\begin{knowledgebox}[这个文件是干什么的？]
+YARN = "资源调度中心"。它决定"哪个任务用哪台机器的 CPU 和内存"。
+
+\textbf{类比}：就像学校食堂的打饭阿姨——学生（任务）来打饭，阿姨（YARN）告诉学生去哪个窗口（哪台机器）。阿姨自己在 node1（ResourceManager），每个窗口有一个服务员（NodeManager 在 node2、node3）。
+\end{knowledgebox}
+
+\begin{lstlisting}[language=XML]
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet type="text/xsl" href="configuration.xsl"?>
+<configuration>
+    <!-- ====== 配置1：ResourceManager在哪 ====== -->
+    <!-- ResourceManager 是"总调度员"，放在 node1 -->
+    <!-- 所有计算任务都要先向它申请资源 -->
+    <property>
+        <name>yarn.resourcemanager.hostname</name>
+        <value>node1</value>
+    </property>
+    
+    <!-- ====== 配置2：NodeManager辅助服务 ====== -->
+    <!-- mapreduce_shuffle = MapReduce 的数据洗牌服务 -->
+    <!-- 不配这个，MapReduce 任务会报错 -->
+    <property>
+        <name>yarn.nodemanager.aux-services</name>
+        <value>mapreduce_shuffle</value>
+    </property>
+    
+    <!-- ====== 配置3：关闭虚拟内存检查 ====== -->
+    <!-- Linux 的虚拟内存检查在竞赛环境经常误报 -->
+    <!-- 关掉它防止任务被误杀 -->
+    <property>
+        <name>yarn.nodemanager.vmem-check-enabled</name>
+        <value>false</value>
+    </property>
+</configuration>
+\end{lstlisting}
+
+\subsubsection{mapred-site.xml}
+
+\begin{lstlisting}[language=XML]
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet type="text/xsl" href="configuration.xsl"?>
+<configuration>
+    <!-- 指定MapReduce运行在YARN上 -->
+    <property>
+        <name>mapreduce.framework.name</name>
+        <value>yarn</value>
+    </property>
+</configuration>
+\end{lstlisting}
+
+\subsubsection{workers}
+
+\begin{lstlisting}[language=bash]
+vi $HADOOP_HOME/etc/hadoop/workers
+
+# 添加DataNode节点
+node1
+node2
+node3
+\end{lstlisting}
+
+\subsection{分发Hadoop到所有节点}
+
+\begin{lstlisting}[language=bash]
+# 将配置好的Hadoop分发到node2和node3
+scp -r /opt/hadoop-3.3.4 root@node2:/opt/
+scp -r /opt/hadoop-3.3.4 root@node3:/opt/
+
+# 在node2和node3上创建软链接并配置环境变量
+ln -s /opt/hadoop-3.3.4 /opt/hadoop
+\end{lstlisting}
+
+\subsection{格式化NameNode并启动集群}
+
+\begin{warnbox}[格式化只会执行一次]
+\texttt{hdfs namenode -format} 只在第一次部署时执行。重复执行会清空 HDFS 数据！
+\end{warnbox}
+
+\begin{lstlisting}[language=bash]
+# 【在 node1 上执行】格式化 NameNode（仅第一次）
+hdfs namenode -format
+
+# 【在 node1 上执行】启动 HDFS（自动在 node2、node3 启动 DataNode）
+start-dfs.sh
+
+# 【在 node1 上执行】启动 YARN
+start-yarn.sh
+
+# 【在 node1 上执行】验证
+jps  # 应有 NameNode, SecondaryNameNode, ResourceManager
+\end{lstlisting}
+
+\begin{tipbox}[启动后必做的验证]
+\begin{lstlisting}[language=bash]
+# 在 node2、node3 上执行
+jps  # 应有 DataNode, NodeManager
+
+# 在 node1 上查看 HDFS 状态
+hdfs dfsadmin -report  # 应看到 node2、node3 的 DataNode
+
+# 访问 Web UI
+# HDFS: http://node1:9870
+# YARN: http://node1:8088
+\end{lstlisting}
+\end{tipbox}
+
+\begin{tipbox}[验证Hadoop集群]
+\begin{lstlisting}[language=bash]
+# 查看HDFS报告
+hdfs dfsadmin -report
+
+# 访问Web UI
+# HDFS NameNode: http://node1:9870
+# YARN ResourceManager: http://node1:8088
+\end{lstlisting}
+\end{tipbox}
+
+%========================================
+\section{HDFS分布式文件系统}
+%========================================
+
+\subsection{HDFS是什么？}
+
+\begin{theorybox}[用拼图理解 HDFS]
+一个 10GB 的电影文件，你的单个硬盘放不下。
+
+\textbf{HDFS 的做法}：把文件切成很多小块（默认每块 128MB），分散存到不同机器上。
+
+\begin{verbatim}
+  10GB电影
+    ├── 块1 (128MB) --> 存在 node1
+    ├── 块2 (128MB) --> 存在 node2
+    ├── 块3 (128MB) --> 存在 node3
+    ├── 块4 (128MB) --> 存在 node1  <-- 副本
+    └── ...
+\end{verbatim}
+
+\textbf{关键设计}：
+\begin{itemize}
+    \item \textbf{分块存储}：大文件切成小块（默认 128MB/块）
+    \item \textbf{多副本}：每块存 3 份（默认），即使某台机器坏了数据还在
+    \item \textbf{NameNode}：记录"哪个文件的哪个块在哪台机器上"（像图书馆的目录）
+    \item \textbf{DataNode}：实际存数据块的机器（像图书馆的书架）
+\end{itemize}
+
+\textbf{竞赛中你需要做的}：在 node1 启动 NameNode，在 node2、node3 启动 DataNode。NameNode 告诉你数据在哪里，DataNode 实际存储数据。
+\end{theorybox}
+
+\subsection{HDFS基本概念}
+
+\begin{theorybox}[HDFS架构]
+\begin{itemize}
+    \item \textbf{NameNode}：管理文件系统命名空间和客户端访问
+    \item \textbf{DataNode}：存储实际的数据块
+    \item \textbf{Block}：数据块，默认128MB
+\end{itemize}
+\end{theorybox}
+
+\subsection{HDFS常用命令}
+
+\begin{table}[H]
+\centering
+\caption{HDFS常用命令}
+\begin{tabular}{ll}
+\toprule
+\textbf{命令} & \textbf{说明} \\
+\midrule
+hdfs dfs -ls / & 查看HDFS根目录 \\
+hdfs dfs -mkdir /path & 创建目录 \\
+hdfs dfs -put local hdfs & 上传文件 \\
+hdfs dfs -get hdfs local & 下载文件 \\
+hdfs dfs -cat /path & 查看文件内容 \\
+hdfs dfs -rm /path & 删除文件 \\
+hdfs dfsadmin -report & 查看集群状态 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{practicebox}[动手练习]
+\begin{enumerate}
+    \item 在HDFS上创建目录：\texttt{/user/root/data}
+    \item 上传本地文件到HDFS
+    \item 查看上传的文件内容
+    \item 下载HDFS文件到本地
+\end{enumerate}
+\end{practicebox}
+
+%========================================
+\section{Zookeeper协调服务}
+%========================================
+
+\subsection{Zookeeper是什么？}
+
+\begin{theorybox}[用班级班长理解 Zookeeper]
+想象一个班级有 30 个同学（30 台服务器）：
+\begin{itemize}
+    \item 谁是班长？（选举 Leader）
+    \item 班长不在了，谁来接任？（故障转移）
+    \item 老师的通知怎么让所有人都知道？（配置同步）
+    \item 怎么防止两个人同时抢同一个任务？（分布式锁）
+\end{itemize}
+
+\textbf{Zookeeper 就是分布式系统的"班长"}，它负责：
+\begin{itemize}
+    \item 选举一个 Leader（谁说了算）
+    \item 监控其他节点的存活状态（谁在线）
+    \item 存储和同步配置信息（通知所有人）
+\end{itemize}
+
+\textbf{为什么 Kafka 需要 Zookeeper？}Kafka 用 Zookeeper 来记录"哪些 Broker 在线"、"Topic 的分区在哪个 Broker 上"等元信息。没有 Zookeeper，Kafka 就不知道集群的状态。
+\end{theorybox}
+
+\subsection{Zookeeper简介}
+
+\begin{theorybox}[Zookeeper作用]
+Zookeeper是一个分布式协调服务，为分布式应用提供一致性服务，常用于：
+\begin{itemize}
+    \item 配置管理
+    \item 命名服务
+    \item 分布式锁
+    \item 集群管理
+\end{itemize}
+\end{theorybox}
+
+\subsection{Zookeeper安装部署}
+
+\begin{lstlisting}[language=bash]
+# 下载Zookeeper（以3.7.1版本为例）
+wget https://repo.huaweicloud.com/apache/zookeeper/zookeeper-3.7.1/apache-zookeeper-3.7.1-bin.tar.gz
+
+# 解压
+tar -zxvf apache-zookeeper-3.7.1-bin.tar.gz -C /opt/
+ln -s /opt/apache-zookeeper-3.7.1-bin /opt/zookeeper
+
+# 配置环境变量
+vi /etc/profile
+export ZOOKEEPER_HOME=/opt/zookeeper
+export PATH=$ZOOKEEPER_HOME/bin:$PATH
+source /etc/profile
+\end{lstlisting}
+
+\subsection{Zookeeper配置}
+
+\begin{lstlisting}[language=bash]
+# 创建数据目录
+mkdir -p /opt/zookeeper/data
+
+# 复制配置文件
+cd /opt/zookeeper/conf
+cp zoo_sample.cfg zoo.cfg  # 从模板复制
+vi zoo.cfg
+
+# ====== 数据存储目录 ======
+dataDir=/opt/zookeeper/data
+
+# ====== 客户端连接端口 ======
+clientPort=2181
+
+# ====== 集群成员列表 ======
+# 格式：server.N=主机名:通信端口:选举端口
+# N 必须和 myid 文件内容一致
+# 所有节点的配置必须完全相同
+server.1=node1:2888:3888
+server.2=node2:2888:3888
+server.3=node3:2888:3888
+\end{lstlisting}
+
+\subsection{配置节点ID}
+
+\begin{lstlisting}[language=bash]
+# 在node1上
+echo "1" > /opt/zookeeper/data/myid
+
+# 在node2上
+echo "2" > /opt/zookeeper/data/myid
+
+# 在node3上
+echo "3" > /opt/zookeeper/data/myid
+\end{lstlisting}
+
+\subsection{启动Zookeeper}
+
+\begin{lstlisting}[language=bash]
+# 在所有节点上启动
+zkServer.sh start
+
+# 查看状态
+zkServer.sh status
+
+# 停止
+zkServer.sh stop
+\end{lstlisting}
+
+%========================================
+\section{HBase分布式数据库}
+%========================================
+
+\subsection{HBase是什么？}
+
+\begin{theorybox}[用通讯录理解 HBase]
+MySQL 是"表格型数据库"——每行有固定的列（姓名、年龄、地址）。
+
+HBase 是"宽列型数据库"——像一个超大通讯录：
+\begin{itemize}
+    \item 每个人（Row Key）可以有不同数量的信息
+    \item 张三只有手机号，李四有手机号+邮箱+微信
+    \item 你不需要提前定义"每个人必须有几列"
+\end{itemize}
+
+\textbf{什么时候用 HBase？}
+\begin{itemize}
+    \item 数据量很大（上亿条记录）
+    \item 需要按某个关键词（Row Key）快速查找
+    \item 列的数量不固定
+\end{itemize}
+
+\textbf{类比}：MySQL 像 Excel 表格，HBase 像字典（按关键词查内容）。
+\end{theorybox}
+
+\subsection{HBase简介}
+
+\begin{theorybox}[HBase特点]
+HBase是一个分布式、可扩展、面向列的NoSQL数据库，基于HDFS存储，提供高吞吐量的随机读写能力。
+
+\textbf{核心组件：}
+\begin{itemize}
+    \item \textbf{HMaster}：管理RegionServer，负责表的DDL操作
+    \item \textbf{RegionServer}：处理客户端读写请求，管理Region
+    \item \textbf{Zookeeper}：协调HMaster和RegionServer
+\end{itemize}
+\end{theorybox}
+
+\subsection{HBase安装部署}
+
+\begin{lstlisting}[language=bash]
+# 下载HBase（以2.4.15版本为例）
+wget https://repo.huaweicloud.com/apache/hbase/2.4.15/hbase-2.4.15-bin.tar.gz
+
+# 解压
+tar -zxvf hbase-2.4.15-bin.tar.gz -C /opt/
+ln -s /opt/hbase-2.4.15 /opt/hbase
+
+# 配置环境变量
+vi /etc/profile
+export HBASE_HOME=/opt/hbase
+export PATH=$HBASE_HOME/bin:$PATH
+source /etc/profile
+\end{lstlisting}
+
+\subsection{HBase配置}
+
+\subsubsection{hbase-env.sh}
+
+\begin{lstlisting}[language=bash]
+vi $HBASE_HOME/conf/hbase-env.sh
+
+# 添加以下内容
+export JAVA_HOME=/opt/jdk1.8.0_212
+export HBASE_MANAGES_ZK=false  # 使用外部Zookeeper
+\end{lstlisting}
+
+\subsubsection{hbase-site.xml}
+
+\begin{lstlisting}[language=XML]
+<?xml version="1.0"?>
+<?xml-stylesheet type="text/xsl" href="configuration.xsl"?>
+<configuration>
+    <!-- 指定HDFS存储路径 -->
+    <property>
+        <name>hbase.rootdir</name>
+        <value>hdfs://node1:9000/hbase</value>
+    </property>
+    
+    <!-- 启用分布式模式 -->
+    <property>
+        <name>hbase.cluster.distributed</name>
+        <value>true</value>
+    </property>
+    
+    <!-- Zookeeper集群地址 -->
+    <property>
+        <name>hbase.zookeeper.quorum</name>
+        <value>node1,node2,node3</value>
+    </property>
+</configuration>
+\end{lstlisting}
+
+\subsection{启动HBase}
+
+\begin{lstlisting}[language=bash]
+# 在node1上启动HBase
+start-hbase.sh
+
+# 查看进程
+jps
+# 应该看到 HMaster 和 HRegionServer
+
+# 停止HBase
+stop-hbase.sh
+\end{lstlisting}
+
+\subsection{HBase Shell操作}
+
+\begin{lstlisting}[language=bash]
+# 进入HBase Shell
+hbase shell
+
+# 常用命令
+help                    # 查看帮助
+list                    # 列出所有表
+create 'student', 'info', 'score'    # 创建表
+describe 'student'                   # 查看表结构
+put 'student', '1001', 'info:name', '张三'  # 插入数据
+get 'student', '1001'                # 查询单行
+scan 'student'                       # 扫描全表
+count 'student'                      # 统计行数
+disable 'student'                    # 禁用表
+drop 'student'                       # 删除表
+exit                                 # 退出
+\end{lstlisting}
+
+%========================================
+\section{Hive数据仓库}
+%========================================
+
+\subsection{Hive是什么？}
+
+\begin{theorybox}[用翻译器理解 Hive]
+HDFS 上存的数据是"裸文件"（文本、JSON），没有表结构，不能用 SQL 查询。
+
+\textbf{Hive 的作用}：给 HDFS 上的文件"翻译"成表格，让你用 SQL 查询。
+
+\begin{verbatim}
+  HDFS 文件（裸数据）  --Hive翻译-->  表格（可以用SQL查）
+  /user/data/log.txt                  SELECT * FROM log WHERE ...
+\end{verbatim}
+
+\textbf{类比}：
+\begin{itemize}
+    \item HDFS 是仓库里的散装货物
+    \item Hive 是货架标签系统——告诉你"第3排第2层是方便面"
+    \item 你不用搬货，只需要查标签（SQL 查询）就知道有什么
+\end{itemize}
+
+\textbf{Hive 不是数据库！} 它只是一个"翻译器"，数据还是存在 HDFS 上。所以 Hive 查询速度不如 MySQL 快，但能处理海量数据。
+\end{theorybox}
+
+\subsection{Hive简介}
+
+\begin{theorybox}[Hive是什么？]
+Hive是基于Hadoop的数据仓库工具，可以将结构化数据文件映射为数据库表，并提供类SQL查询（HQL）。
+\end{theorybox}
+
+\subsection{Hive安装部署}
+
+\begin{lstlisting}[language=bash]
+# 下载Hive（以3.1.3版本为例）
+wget https://repo.huaweicloud.com/apache/hive/hive-3.1.3/apache-hive-3.1.3-bin.tar.gz
+
+# 解压
+tar -zxvf apache-hive-3.1.3-bin.tar.gz -C /opt/
+ln -s /opt/apache-hive-3.1.3-bin /opt/hive
+
+# 配置环境变量
+vi /etc/profile
+export HIVE_HOME=/opt/hive
+export PATH=$HIVE_HOME/bin:$PATH
+source /etc/profile
+\end{lstlisting}
+
+\subsection{安装MySQL（元数据存储）}
+
+\begin{lstlisting}[language=bash]
+# 安装MySQL
+yum install -y mysql-server
+
+# 启动MySQL
+systemctl start mysqld
+systemctl enable mysqld
+
+# 修改密码
+mysqladmin -u root password '123456'
+
+# 登录MySQL创建Hive元数据库
+mysql -uroot -p123456
+
+# 执行SQL
+CREATE DATABASE hive DEFAULT CHARACTER SET utf8;
+CREATE USER 'hive'@'%' IDENTIFIED BY '123456';
+GRANT ALL PRIVILEGES ON hive.* TO 'hive'@'%';
+FLUSH PRIVILEGES;
+EXIT;
+\end{lstlisting}
+
+\subsection{Hive配置}
+
+\subsubsection{hive-site.xml}
+
+\begin{lstlisting}[language=XML]
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet type="text/xsl" href="configuration.xsl"?>
+<configuration>
+    <!-- MySQL连接配置 -->
+    <property>
+        <name>javax.jdo.option.ConnectionURL</name>
+        <value>jdbc:mysql://node1:3306/hive?createDatabaseIfNotExist=true&amp;useSSL=false</value>
+    </property>
+    
+    <property>
+        <name>javax.jdo.option.ConnectionDriverName</name>
+        <value>com.mysql.jdbc.Driver</value>
+    </property>
+    
+    <property>
+        <name>javax.jdo.option.ConnectionUserName</name>
+        <value>hive</value>
+    </property>
+    
+    <property>
+        <name>javax.jdo.option.ConnectionPassword</name>
+        <value>123456</value>
+    </property>
+</configuration>
+\end{lstlisting}
+
+\subsection{初始化Hive元数据}
+
+\begin{lstlisting}[language=bash]
+# 上传MySQL驱动到 $HIVE_HOME/lib/
+
+# 初始化元数据
+schematool -dbType mysql -initSchema
+\end{lstlisting}
+
+\subsection{启动Hive}
+
+\begin{lstlisting}[language=bash]
+# 启动Hive CLI
+hive
+
+# 或者启动HiveServer2（推荐）
+nohup hiveserver2 > /var/log/hive/hiveserver2.log 2>&1 &
+
+# 使用Beeline连接
+beeline -u jdbc:hive2://node1:10000 -n root
+\end{lstlisting}
+
+%========================================
+\section{Spark计算引擎}
+%========================================
+
+\subsection{Spark是什么？}
+
+\begin{theorybox}[用超级计算器理解 Spark]
+Hadoop 的 MapReduce 计算方式很慢——每次计算都要把中间结果写到硬盘上，再读出来继续算。
+
+\textbf{Spark 的改进}：把中间结果放在内存里，不用反复读写硬盘，速度提升 10-100 倍。
+
+\textbf{类比}：
+\begin{itemize}
+    \item MapReduce = 做作业时每算一步都抄到本子上，再翻出来继续算
+    \item Spark = 做作业时直接在草稿纸上算，算完再抄答案
+\end{itemize}
+
+\textbf{Spark 能做什么？}
+\begin{itemize}
+    \item \textbf{批处理}：处理大量历史数据（比如统计一年的销售总额）
+    \item \textbf{流处理}：实时处理数据流（比如实时监控今天的销售趋势）
+    \item \textbf{SQL 查询}：用 SQL 语句查询大数据
+    \item \textbf{机器学习}：训练预测模型
+\end{itemize}
+
+\textbf{竞赛中你需要做的}：在 node1 上配置 Spark Master，node2、node3 上配置 Spark Worker，然后提交任务让它们协同计算。
+\end{theorybox}
+
+\subsection{Spark简介}
+
+\begin{theorybox}[Spark特点]
+Spark是一个快速、通用、可扩展的大数据计算引擎，支持批处理、流处理、SQL查询、机器学习和图计算。
+\end{theorybox}
+
+\subsection{Spark安装部署}
+
+\begin{lstlisting}[language=bash]
+# 下载Spark（以3.3.2版本为例，预编译Hadoop版本）
+wget https://repo.huaweicloud.com/apache/spark/spark-3.3.2/spark-3.3.2-bin-hadoop3.tgz
+
+# 解压
+tar -zxvf spark-3.3.2-bin-hadoop3.tgz -C /opt/
+ln -s /opt/spark-3.3.2-bin-hadoop3 /opt/spark
+
+# 配置环境变量
+vi /etc/profile
+export SPARK_HOME=/opt/spark
+export PATH=$SPARK_HOME/bin:$SPARK_HOME/sbin:$PATH
+source /etc/profile
+\end{lstlisting}
+
+\subsection{Spark配置}
+
+\subsubsection{spark-env.sh}
+
+\begin{lstlisting}[language=bash]
+cd $SPARK_HOME/conf
+cp spark-env.sh.template spark-env.sh
+
+vi spark-env.sh
+
+# 添加以下内容
+export JAVA_HOME=/opt/jdk1.8.0_212
+export HADOOP_HOME=/opt/hadoop
+export HADOOP_CONF_DIR=/opt/hadoop/etc/hadoop
+export SPARK_MASTER_HOST=node1
+export SPARK_MASTER_PORT=7077
+export SPARK_WORKER_CORES=2
+export SPARK_WORKER_MEMORY=4g
+\end{lstlisting}
+
+\subsubsection{workers}
+
+\begin{lstlisting}[language=bash]
+cp workers.template workers
+
+vi workers
+
+# 添加Worker节点
+node1
+node2
+node3
+\end{lstlisting}
+
+\subsection{启动Spark集群}
+
+\begin{lstlisting}[language=bash]
+# 启动Master和Workers
+start-all.sh
+
+# 启动History Server
+start-history-server.sh
+
+# 查看进程
+jps
+
+# 停止集群
+stop-all.sh
+\end{lstlisting}
+
+%========================================
+\section{Kafka消息队列}
+%========================================
+
+\subsection{Kafka是什么？}
+
+\begin{theorybox}[用传送带理解 Kafka]
+想象一个工厂流水线：
+\begin{itemize}
+    \item 工人 A（Flume）把产品放到传送带上
+    \item 传送带（Kafka）暂时存储产品
+    \item 工人 B（Spark）从传送带上取产品加工
+\end{itemize}
+
+\textbf{为什么要用 Kafka？}
+\begin{itemize}
+    \item \textbf{速度不匹配}：A 生产速度快，B 处理速度慢。Kafka 做缓冲区，防止 B 来不及处理而丢数据
+    \item \textbf{解耦}：A 和 B 不需要直接通信。A 只管往 Kafka 放，B 只管从 Kafka 取
+    \item \textbf{容错}：如果 B 挂了，数据还在 Kafka 里，B 恢复后可以继续取
+\end{itemize}
+
+\textbf{Kafka 的核心概念}：
+\begin{itemize}
+    \item \textbf{Topic}：消息分类（比如"用户行为"是一个 Topic，"订单"是另一个 Topic）
+    \item \textbf{Partition}：分区，Topic 的子单元，可以让多个消费者并行读取
+    \item \textbf{Broker}：Kafka 服务器，存储消息
+    \item \textbf{Producer}：消息生产者（Flume 就是 Producer）
+    \item \textbf{Consumer}：消息消费者（Spark 就是 Consumer）
+\end{itemize}
+\end{theorybox}
+
+\subsection{Kafka简介}
+
+\begin{theorybox}[Kafka作用]
+Kafka是一个分布式流处理平台，主要用于：
+\begin{itemize}
+    \item 消息队列：发布和订阅消息流
+    \item 存储：持久化存储消息流
+    \item 处理：实时处理消息流
+\end{itemize}
+\end{theorybox}
+
+\subsection{Kafka安装部署}
+
+\begin{lstlisting}[language=bash]
+# 下载Kafka（以3.4.0版本为例）
+wget https://repo.huaweicloud.com/apache/kafka/3.4.0/kafka_2.12-3.4.0.tgz
+
+# 解压
+tar -zxvf kafka_2.12-3.4.0.tgz -C /opt/
+ln -s /opt/kafka_2.12-3.4.0 /opt/kafka
+
+# 配置环境变量
+vi /etc/profile
+export KAFKA_HOME=/opt/kafka
+export PATH=$KAFKA_HOME/bin:$PATH
+source /etc/profile
+\end{lstlisting}
+
+\subsection{Kafka配置}
+
+\begin{theorybox}[Kafka 配置详解]
+Kafka 只装在 node1（单 Broker）。
+
+\textbf{关键配置}：
+\begin{itemize}
+    \item \texttt{broker.id}：Broker 编号，每个 Broker 必须不同
+    \item \texttt{listeners}：监听地址（\texttt{0.0.0.0} = 所有网卡）
+    \item \texttt{advertised.listeners}：对外公布地址（\textbf{不能写 0.0.0.0}）
+    \item \texttt{zookeeper.connect}：Zookeeper 集群地址
+\end{itemize}
+\end{theorybox}
+
+\begin{knowledgebox}[server.properties 是干什么的？]
+\texttt{server.properties} 是 Kafka Broker（消息服务器）的配置文件。它告诉 Kafka：
+\begin{itemize}
+    \item 自己是谁（broker.id）
+    \item 在哪个端口接收消息（listeners）
+    \item 数据存在哪里（log.dirs）
+    \item Zookeeper 在哪（zookeeper.connect）
+\end{itemize}
+\end{knowledgebox}
+
+\begin{lstlisting}[language=bash]
+# 【在 node1 上执行】配置 Kafka
+vi $KAFKA_HOME/config/server.properties
+
+# ====== 配置1：Broker编号 ======
+# 每个 Kafka 服务器必须有唯一编号
+# 竞赛中只有1个 Broker，设0即可
+broker.id=0
+
+# ====== 配置2：监听地址 ======
+# listeners：Kafka 在哪个地址和端口接收数据
+# 0.0.0.0 表示监听所有网卡（本机的所有IP都能访问）
+listeners=PLAINTEXT://0.0.0.0:9092
+
+# ====== 配置3：对外公布地址（非常重要！） ======
+# 客户端（Flume、Spark）用这个地址连接 Kafka
+# 必须写具体的主机名或IP，绝对不能写 0.0.0.0！
+advertised.listeners=PLAINTEXT://node1:9092
+
+# ====== 配置4：消息存储目录 ======
+# Kafka 的所有消息存在这个目录下
+log.dirs=/opt/kafka-logs
+
+# ====== 配置5：Zookeeper地址 ======
+# Kafka 依赖 Zookeeper 来管理集群信息
+# 写 Zookeeper 集群所有节点的地址
+zookeeper.connect=node1:2181,node2:2181,node3:2181
+
+# ====== 配置6：默认分区数 ======
+# 每个 Topic 默认分成几个分区
+# 分区越多，并行度越高
+num.partitions=3
+\end{lstlisting}
+
+\begin{warnbox}[重要]
+\texttt{advertised.listeners} 必须写 \texttt{node1}（或实际 IP），\textbf{绝对不能写 0.0.0.0}！否则客户端无法连接。
+\end{warnbox}
+
+\subsection{启动Kafka}
+
+\begin{lstlisting}[language=bash]
+# 在所有节点上启动（先启动Zookeeper）
+zkServer.sh start
+
+# 启动Kafka（每个节点）
+kafka-server-start.sh -daemon $KAFKA_HOME/config/server.properties
+
+# 停止Kafka
+kafka-server-stop.sh
+\end{lstlisting}
+
+%========================================
+\section{Flume数据采集}
+%========================================
+
+\subsection{Flume是什么？}
+
+\begin{theorybox}[用搬家公司理解 Flume]
+你的数据在某个地方（比如日志文件），你需要把它搬到另一个地方（比如 Kafka）。
+
+\textbf{Flume 就是"数据搬家公司"}，它的工作流程：
+\begin{verbatim}
+ [日志文件] --Source读取--> [Channel暂存] --Sink发送--> [Kafka]
+\end{verbatim}
+
+\textbf{三个核心组件（记住"搬、存、发"）}：
+\begin{itemize}
+    \item \textbf{Source}（搬）：从哪里读数据——可以监控日志文件、监听端口等
+    \item \textbf{Channel}（存）：暂存数据——用内存（快）或文件（安全）
+    \item \textbf{Sink}（发）：发到哪里——可以发到 Kafka、HDFS、HBase 等
+\end{itemize}
+
+\textbf{为什么不用简单的命令？} 比如 \texttt{cat file | kafka-producer} 不行吗？
+
+在生产环境中，Flume 提供了：
+\begin{itemize}
+    \item 断点续传（程序挂了不丢数据）
+    \item 批量发送（提高效率）
+    \item 容错机制（自动重试失败的发送）
+    \item 可配置的数据转换（过滤、格式化）
+\end{itemize}
+\end{theorybox}
+
+\subsection{Flume简介}
+
+\begin{theorybox}[Flume架构]
+Flume是一个分布式、可靠、高可用的海量日志采集、聚合和传输系统。
+
+\textbf{核心组件：}
+\begin{itemize}
+    \item \textbf{Agent}：Flume运行的最小单位，包含Source、Channel、Sink
+    \item \textbf{Source}：数据源，负责收集数据
+    \item \textbf{Channel}：数据通道，临时存储数据
+    \item \textbf{Sink}：数据目的地，负责输出数据
+\end{itemize}
+\end{theorybox}
+
+\subsection{Flume安装部署}
+
+\begin{lstlisting}[language=bash]
+# 下载Flume（以1.11.0版本为例）
+wget https://repo.huaweicloud.com/apache/flume/1.11.0/apache-flume-1.11.0-bin.tar.gz
+
+# 解压
+tar -zxvf apache-flume-1.11.0-bin.tar.gz -C /opt/
+ln -s /opt/apache-flume-1.11.0-bin /opt/flume
+
+# 配置环境变量
+vi /etc/profile
+export FLUME_HOME=/opt/flume
+export PATH=$FLUME_HOME/bin:$PATH
+source /etc/profile
+\end{lstlisting}
+
+\subsection{配置采集任务}
+
+\begin{lstlisting}[language=bash]
+vi $FLUME_HOME/conf/log_to_kafka.conf
+
+# 添加以下内容
+agent.sources = src
+agent.channels = ch
+agent.sinks = sink
+
+agent.sources.src.type = exec
+agent.sources.src.command = tail -F /var/log/test.log
+agent.sources.src.channels = ch
+
+agent.channels.ch.type = memory
+agent.channels.ch.capacity = 10000
+
+agent.sinks.sink.type = org.apache.flume.sink.kafka.KafkaSink
+agent.sinks.sink.kafka.bootstrap.servers = node1:9092
+agent.sinks.sink.kafka.topic = log-topic
+agent.sinks.sink.channel = ch
+\end{lstlisting}
+
+%========================================
+\section{ClickHouse列式数据库}
+%========================================
+
+\subsection{ClickHouse是什么？}
+
+\begin{theorybox}[用超级 Excel 理解 ClickHouse]
+MySQL 是"行式数据库"——查一行数据很快，但统计分析很慢。
+
+\textbf{ClickHouse 是"列式数据库"}——统计分析极快。
+
+\textbf{类比}：
+\begin{itemize}
+    \item MySQL（行式）= 一张写满数据的纸，你只想看"成绩"这一列，但必须从头到尾扫一遍
+    \item ClickHouse（列式）= 每列单独一张纸，你想看"成绩"直接翻那一张
+\end{itemize}
+
+\textbf{什么时候用 ClickHouse？}
+\begin{itemize}
+    \item 需要做大量统计分析（COUNT、SUM、AVG、GROUP BY）
+    \item 数据量巨大（上亿行）
+    \item 对查询速度要求高
+\end{itemize}
+
+\textbf{ClickHouse vs Hive}：
+\begin{itemize}
+    \item Hive：数据量无限，查询慢（适合离线分析）
+    \item ClickHouse：数据量有限（单机能存几百亿行），查询极快（适合实时分析）
+\end{itemize}
+\end{theorybox}
+
+\subsection{ClickHouse简介}
+
+\begin{theorybox}[ClickHouse特点]
+ClickHouse是一个用于联机分析(OLAP)的列式数据库管理系统，具有高性能、高压缩比、实时分析等特点。
+\end{theorybox}
+
+\subsection{ClickHouse安装部署}
+
+\begin{lstlisting}[language=bash]
+# 安装依赖
+yum install -y yum-utils
+
+# 添加ClickHouse仓库
+yum-config-manager --add-repo https://packages.clickhouse.com/rpm/clickhouse.repo
+
+# 安装ClickHouse
+yum install -y clickhouse-server clickhouse-client
+
+# 启动服务
+systemctl start clickhouse-server
+systemctl enable clickhouse-server
+\end{lstlisting}
+
+\subsection{ClickHouse客户端操作}
+
+\begin{lstlisting}[language=bash]
+# 连接ClickHouse
+clickhouse-client
+
+# 常用命令
+SHOW DATABASES;
+CREATE DATABASE test_db;
+USE test_db;
+SHOW TABLES;
+
+-- 创建表
+CREATE TABLE test_table (
+    id UInt32,
+    name String,
+    age UInt8
+) ENGINE = MergeTree()
+ORDER BY id;
+
+-- 插入数据
+INSERT INTO test_table VALUES (1, 'Alice', 25);
+
+-- 查询数据
+SELECT * FROM test_table;
+\end{lstlisting}
+
+%========================================
+\section{平台联调与测试}
+%========================================
+
+\subsection{组件启动顺序}
+
+\begin{tipbox}[启动口诀：ZK先，Hadoop次，Kafka后]
+Zookeeper 必须在 Kafka 之前启动，HDFS 必须在 HBase 之前启动。
+\end{tipbox}
+
+\begin{lstlisting}[language=bash]
+# ===== 第1步：Zookeeper（所有3个节点都执行）=====
+zkServer.sh start
+# 验证：任意节点执行 zkServer.sh status，应看到 leader/follower
+
+# ===== 第2步：Hadoop（在 node1 上执行）=====
+start-dfs.sh
+start-yarn.sh
+# 验证：jps 检查各节点
+
+# ===== 第3步：HBase（在 node1 上执行）=====
+start-hbase.sh
+
+# ===== 第4步：Hive（在 node1 上执行）=====
+nohup hiveserver2 > /var/log/hive/hiveserver2.log 2>&1 &
+
+# ===== 第5步：Spark（在 node1 上执行）=====
+start-all.sh
+start-history-server.sh
+
+# ===== 第6步：Kafka（在 node1 上执行）=====
+# 注意：必须等 Zookeeper 完全启动后再启动 Kafka
+export KAFKA_HEAP_OPTS='-Xmx256M -Xms256M'
+kafka-server-start.sh -daemon $KAFKA_HOME/config/server.properties
+sleep 15  # 等待 Kafka 完全启动
+
+kafka-topics.sh --create --bootstrap-server node1:9092 \
+    --replication-factor 1 --partitions 3 --topic user-behavior
+
+# ===== 第7步：ClickHouse（在 node2 上执行）=====
+systemctl start clickhouse-server
+\end{lstlisting}
+
+\subsection{组件停止顺序}
+
+\begin{lstlisting}[language=bash]
+# 1. 停止Flume
+pkill -f flume
+
+# 2. 停止Kafka
+kafka-server-stop.sh
+
+# 3. 停止Spark
+stop-history-server.sh
+stop-all.sh
+
+# 4. 停止HiveServer2
+pkill -f HiveServer2
+
+# 5. 停止HBase
+stop-hbase.sh
+
+# 6. 停止Hadoop
+stop-all.sh
+
+# 7. 停止Zookeeper
+zkServer.sh stop
+
+# 8. 停止ClickHouse
+systemctl stop clickhouse-server
+\end{lstlisting}
+
+%========================================
+\section{竞赛模拟实战}
+%========================================
+
+\subsection{实战场景：电商实时数据分析平台}
+
+\begin{theorybox}[场景描述]
+构建一个电商实时数据分析平台，实现：
+\begin{enumerate}
+    \item 使用Flume采集用户行为日志
+    \item 通过Kafka进行消息传输
+    \item 使用Spark Streaming进行实时处理
+    \item 将结果存储到HBase和ClickHouse
+    \item 使用Hive进行离线分析
+\end{enumerate}
+\end{theorybox}
+
+\subsection{步骤1：云端数据仿真平台}
+
+\begin{knowledgebox}[数据来源方案]
+使用云端部署的电商数据仿真平台实时生成数据，平台提供 RESTful API 接口，可直接供 Flume 采集或 Kafka 消费。
+
+\textbf{数据格式}：JSON格式，包含以下字段：
+\begin{itemize}
+    \item timestamp：事件发生时间
+    \item user\_id：用户ID（U10001-U99999）
+    \item event\_type：事件类型（view/click/add\_cart/buy/search/collect/share）
+    \item session\_id：会话ID（32位MD5）
+    \item device：设备类型（iOS/Android/PC/小程序/H5）
+    \item ip：用户IP地址
+    \item product\_id：商品ID（P10001-P99999）
+    \item category：商品类别（15个品类）
+    \item price：商品价格（根据品类自动生成）
+    \item page\_source：来源页面
+    \item stay\_time：停留秒数
+\end{itemize}
+\end{knowledgebox}
+
+\subsubsection{访问仿真平台}
+
+\begin{tipbox}[平台访问]
+\begin{itemize}
+    \item 平台地址：\texttt{http://163.7.1.176:8889}
+    \item 平台自动实时生成电商用户行为数据（每秒1条）
+    \item 内置1000个用户画像、500个商品、15个品类
+    \item 所有接口均可直接访问，无需鉴权
+\end{itemize}
+\end{tipbox}
+
+\subsubsection{API 接口说明}
+
+\begin{table}[H]
+\centering
+\caption{仿真平台 API 接口}
+{\footnotesize
+\begin{tabular}{lll}
+\toprule
+\textbf{方法} & \textbf{接口路径} & \textbf{说明} \\
+\midrule
+GET & /api/data?n=10 & 生成N条数据 \\
+GET & /api/log?lines=10 & 模拟日志输出 \\
+GET & /api/history & 历史数据查询 \\
+GET & /api/history?event\_type=buy & 按事件筛选 \\
+GET & /api/history?category=手机数码 & 按品类筛选 \\
+GET & /api/users & 用户画像 \\
+GET & /api/products & 商品数据 \\
+GET & /api/dirty/tsv & 脏数据TSV格式 \\
+GET & /api/dirty/enhanced & 增强版脏数据 \\
+GET & /api/timeseries & 时间序列统计 \\
+GET & /api/hive/ddl & 自动生成Hive建表SQL \\
+GET & /api/dirty/csv & 脏数据CSV格式 \\
+GET & /api/join & 三表关联数据 \\
+GET & /api/export/csv & 批量CSV导出 \\
+GET & /api/stats & 统计汇总 \\
+\bottomrule
+\end{tabular}
+}
+\end{table}
+
+\subsubsection{创建日志文件供 Flume 采集}
+
+\begin{lstlisting}[language=bash]
+# 创建日志目录
+mkdir -p /var/log/ecommerce
+
+# 使用 API 生成数据并保存到本地日志文件
+# 方法一：curl 单次获取
+curl -s "http://163.7.1.176:8889/api/data?n=100" | python3 -m json.tool > /var/log/ecommerce/user_behavior.log
+
+# 方法二：持续采集（每秒从 API 获取1条，写入日志文件）
+while true; do
+    curl -s "http://163.7.1.176:8889/api/log?lines=1" >> /var/log/ecommerce/user_behavior.log
+    sleep 1
+done
+\end{lstlisting}
+
+\begin{practicebox}[动手练习]
+\begin{enumerate}
+    \item 访问仿真平台首页，查看实时数据流
+    \item 使用 curl 获取 10 条数据：\texttt{curl ".../api/data?n=10"}
+    \item 查看用户画像数据：\texttt{curl ".../api/users?page=1"}
+    \item 查看统计汇总：\texttt{curl ".../api/stats"}
+    \item 创建本地日志文件，为后续 Flume 采集做准备
+\end{enumerate}
+\end{practicebox}
+
+\subsection{步骤2：创建Kafka Topic}
+
+\begin{lstlisting}[language=bash]
+# 创建Topic，3个副本，3个分区
+kafka-topics.sh --create --bootstrap-server node1:9092 \
+    --replication-factor 3 --partitions 3 --topic user-behavior
+
+# 验证Topic创建成功
+kafka-topics.sh --describe --bootstrap-server node1:9092 --topic user-behavior
+\end{lstlisting}
+
+\subsection{步骤3：创建HBase表}
+
+\begin{lstlisting}[language=bash]
+# 进入HBase Shell
+hbase shell
+
+# 创建用户行为表
+create 'user_behavior', 'info'
+
+# 验证表创建成功
+list
+\end{lstlisting}
+
+\subsection{步骤4：创建ClickHouse表}
+
+\begin{lstlisting}[language=bash]
+# 连接ClickHouse
+clickhouse-client
+
+# 创建电商数据库
+CREATE DATABASE IF NOT EXISTS ecommerce;
+
+# 创建用户统计表
+CREATE TABLE ecommerce.user_stats (
+    user_id String,
+    event_type String,
+    event_count UInt32,
+    stats_date Date
+) ENGINE = MergeTree()
+ORDER BY (user_id, event_type, stats_date);
+
+# 退出
+exit
+\end{lstlisting}
+
+\subsection{步骤5：配置并启动Flume采集}
+
+\begin{lstlisting}[language=bash]
+# 编辑Flume配置文件
+vi $FLUME_HOME/conf/ecommerce.conf
+\end{lstlisting}
+
+配置文件内容：
+\begin{lstlisting}[language=bash]
+agent.sources = src
+agent.channels = ch
+agent.sinks = kafka
+
+# Source配置：监控日志文件
+agent.sources.src.type = exec
+agent.sources.src.command = tail -F /var/log/ecommerce/user_behavior.log
+agent.sources.src.channels = ch
+
+# Channel配置：内存通道
+agent.channels.ch.type = memory
+agent.channels.ch.capacity = 10000
+agent.channels.ch.transactionCapacity = 1000
+
+# Sink配置：输出到Kafka
+agent.sinks.kafka.type = org.apache.flume.sink.kafka.KafkaSink
+agent.sinks.kafka.kafka.bootstrap.servers = node1:9092,node2:9092,node3:9092
+agent.sinks.kafka.kafka.topic = user-behavior
+agent.sinks.kafka.kafka.flumeBatchSize = 100
+agent.sinks.kafka.channel = ch
+\end{lstlisting}
+
+启动Flume：
+\begin{lstlisting}[language=bash]
+# 启动Flume采集
+flume-ng agent --name agent --conf $FLUME_HOME/conf \
+    --conf-file $FLUME_HOME/conf/ecommerce.conf \
+    -Dflume.root.logger=INFO,console
+\end{lstlisting}
+
+\subsection{步骤6：编写Spark Streaming处理程序}
+
+创建处理程序文件：
+\begin{lstlisting}[language=bash]
+vi /opt/spark-apps/ecommerce_analysis.py
+\end{lstlisting}
+
+程序内容：
+\begin{lstlisting}[language=Python]
+from pyspark.sql import SparkSession
+from pyspark.sql.functions import *
+from pyspark.sql.types import *
+
+# 创建SparkSession
+spark = SparkSession.builder \
+    .appName("Ecommerce Analysis") \
+    .master("spark://node1:7077") \
+    .getOrCreate()
+
+# 定义JSON schema
+schema = StructType([
+    StructField("timestamp", StringType(), True),
+    StructField("user_id", StringType(), True),
+    StructField("event_type", StringType(), True),
+    StructField("session_id", StringType(), True),
+    StructField("device", StringType(), True),
+    StructField("ip", StringType(), True),
+    StructField("product_id", StringType(), True),
+    StructField("category", StringType(), True),
+    StructField("price", DoubleType(), True),
+    StructField("page_source", StringType(), True),
+    StructField("stay_time", IntegerType(), True)
+])
+
+# 读取Kafka数据
+df = spark.readStream \
+    .format("kafka") \
+    .option("kafka.bootstrap.servers", "node1:9092,node2:9092,node3:9092") \
+    .option("subscribe", "user-behavior") \
+    .load()
+
+# 解析JSON数据
+parsed = df.select(
+    from_json(col("value").cast("string"), schema).alias("data")
+)
+
+# 统计用户行为
+event_stats = parsed.groupBy("data.user_id", "data.event_type") \
+    .count() \
+    .withColumnRenamed("count", "event_count")
+
+# 写入HBase
+event_stats.writeStream \
+    .outputMode("update") \
+    .format("org.apache.hadoop.hbase.spark") \
+    .option("hbase.table", "user_behavior") \
+    .option("hbase.spark.use.hbasecontext", "false") \
+    .start()
+
+# 写入ClickHouse
+event_stats.writeStream \
+    .outputMode("update") \
+    .format("jdbc") \
+    .option("url", "jdbc:clickhouse://node1:8123/ecommerce") \
+    .option("dbtable", "user_stats") \
+    .option("user", "default") \
+    .option("driver", "com.clickhouse.jdbc.ClickHouseDriver") \
+    .start()
+
+# 等待流处理
+spark.streams.awaitAnyTermination()
+\end{lstlisting}
+
+提交Spark作业：
+\begin{lstlisting}[language=bash]
+# 提交Spark Streaming作业
+spark-submit --master spark://node1:7077 \
+    --packages org.apache.spark:spark-sql-kafka-0-10_2.12:3.3.2 \
+    /opt/spark-apps/ecommerce_analysis.py
+\end{lstlisting}
+
+\subsection{步骤7：验证数据流转}
+
+\subsubsection{验证Kafka数据}
+
+\begin{lstlisting}[language=bash]
+# 消费Kafka数据，查看是否采集成功
+kafka-console-consumer.sh --bootstrap-server node1:9092 \
+    --topic user-behavior --from-beginning
+\end{lstlisting}
+
+\subsubsection{验证HBase数据}
+
+\begin{lstlisting}[language=bash]
+# 进入HBase Shell
+hbase shell
+
+# 扫描用户行为表
+scan 'user_behavior', {LIMIT=>10}
+
+# 统计行数
+count 'user_behavior'
+\end{lstlisting}
+
+\subsubsection{验证ClickHouse数据}
+
+\begin{lstlisting}[language=bash]
+# 查询ClickHouse统计结果
+clickhouse-client -q "SELECT * FROM ecommerce.user_stats LIMIT 10"
+
+# 按事件类型统计
+clickhouse-client -q "SELECT event_type, SUM(event_count) FROM ecommerce.user_stats GROUP BY event_type"
+\end{lstlisting}
+
+\subsubsection{验证Hive数据}
+
+\begin{lstlisting}[language=bash]
+# 创建Hive外部表映射HBase数据
+hive -e "
+CREATE EXTERNAL TABLE user_behavior_hbase (
+    rowkey STRING,
+    user_id STRING,
+    event_type STRING,
+    event_count INT
+)
+STORED BY 'org.apache.hadoop.hive.hbase.HBaseStorageHandler'
+WITH SERDEPROPERTIES ('hbase.columns.mapping' = ':key,info:user_id,info:event_type,info:event_count')
+TBLPROPERTIES ('hbase.table.name' = 'user_behavior');
+
+SELECT * FROM user_behavior_hbase LIMIT 10;
+"
+\end{lstlisting}
+
+\begin{tipbox}[完整流程总结]
+\begin{enumerate}
+    \item 数据生成器持续产生用户行为日志
+    \item Flume监控日志文件，实时采集到Kafka
+    \item Spark Streaming从Kafka消费数据，进行实时处理
+    \item 处理结果同时写入HBase和ClickHouse
+    \item 使用Hive可以对HBase数据进行离线分析
+\end{enumerate}
+\end{tipbox}
+
+%========================================
+\section{大数据平台参数优化（本科独立考核模块）}
+
+\begin{warnbox}[重要提醒]
+参数优化是本科组的独立考核模块！考试中可能会要求：
+\begin{itemize}
+    \item 修改 HDFS 副本数（dfs.replication）
+    \item 修改 Spark Executor 内存
+    \item 修改 Kafka 分区数
+    \item 修改 HBase 并发参数
+\end{itemize}
+
+\textbf{修改后一定要验证}：重启服务 + 检查配置是否生效。
+\end{warnbox}
+
+\begin{knowledgebox}[参数优化是什么意思？]
+竞赛不仅要求"部署成功"，还要求"根据题目要求调整参数"。比如：
+\begin{itemize}
+    \item 题目说"HDFS 副本数设为 2"→ 你需要修改 hdfs-site.xml 中的 dfs.replication
+    \item 题目说"Spark Executor 内存设为 2G"→ 你需要修改 spark-submit 的参数
+    \item 题目说"Kafka 分区数设为 6"→ 你需要修改 Topic 配置
+\end{itemize}
+
+本章列出各组件最常考的参数和修改方法。
+\end{knowledgebox}
+
+\subsection{HDFS 参数优化}
+
+{\footnotesize
+\begin{table}[H]
+\centering
+\begin{tabular}{llll}
+\toprule
+\textbf{参数} & \textbf{说明} & \textbf{默认值} & \textbf{修改方法} \\
+\midrule
+dfs.replication & 副本数 & 3 & hdfs-site.xml \\
+dfs.blocksize & 数据块大小 & 128MB & hdfs-site.xml \\
+dfs.namenode.handler.count & NN并发处理数 & 10 & hdfs-site.xml \\
+\bottomrule
+\end{tabular}
+\end{table}
+}
+
+\begin{lstlisting}[language=XML]
+<!-- hdfs-site.xml 中修改副本数 -->
+<property>
+    <name>dfs.replication</name>
+    <value>2</value>  <!-- 改为 2 -->
+</property>
+<!-- 修改块大小 -->
+<property>
+    <name>dfs.blocksize</name>
+    <value>64m</value>  <!-- 改为 64MB -->
+</property>
+\end{lstlisting}
+
+\subsection{YARN 参数优化}
+
+{\footnotesize
+\begin{table}[H]
+\centering
+\begin{tabular}{llll}
+\toprule
+\textbf{参数} & \textbf{说明} & \textbf{默认值} & \textbf{修改方法} \\
+\midrule
+yarn.nodemanager.resource.memory-mb & 节点可用内存 & 8192 & yarn-site.xml \\
+yarn.scheduler.minimum-allocation-mb & 最小容器内存 & 1024 & yarn-site.xml \\
+yarn.nodemanager.vmem-check-enabled & 虚拟内存检查 & true & yarn-site.xml \\
+\bottomrule
+\end{tabular}
+\end{table}
+}
+
+\subsection{Spark 参数优化}
+
+\begin{lstlisting}[language=bash]
+# 提交 Spark 作业时指定参数
+spark-submit \
+    --num-executors 4 \          # Executor 数量
+    --executor-cores 2 \         # 每个 Executor 的核心数
+    --executor-memory 2g \       # 每个 Executor 的内存
+    --driver-memory 1g \         # Driver 内存
+    your_app.py
+\end{lstlisting}
+
+\subsection{Kafka 参数优化}
+
+{\footnotesize
+\begin{table}[H]
+\centering
+\begin{tabular}{llll}
+\toprule
+\textbf{参数} & \textbf{说明} & \textbf{默认值} & \textbf{修改方法} \\
+\midrule
+num.partitions & 默认分区数 & 3 & server.properties \\
+log.retention.hours & 数据保留时间 & 168h & server.properties \\
+message.max.bytes & 最大消息大小 & 1MB & server.properties \\
+\bottomrule
+\end{tabular}
+\end{table}
+}
+
+\subsection{HBase 参数优化}
+
+{\footnotesize
+\begin{table}[H]
+\centering
+\begin{tabular}{llll}
+\toprule
+\textbf{参数} & \textbf{说明} & \textbf{默认值} & \textbf{修改方法} \\
+\midrule
+hbase.regionserver.handler.count & RS并发处理数 & 30 & hbase-site.xml \\
+hbase.hregion.max.filesize & Region最大大小 & 10GB & hbase-site.xml \\
+\bottomrule
+\end{tabular}
+\end{table}
+}
+
+\subsection{参数修改后的生效方式}
+
+\begin{lstlisting}[language=bash]
+# 修改配置文件后，需要重启对应服务才能生效
+
+# HDFS 参数修改后：
+stop-dfs.sh && start-dfs.sh
+
+# YARN 参数修改后：
+stop-yarn.sh && start-yarn.sh
+
+# Kafka 参数修改后（部分参数可动态修改）：
+kafka-configs.sh --alter --entity-type topics --entity-name user-behavior \
+    --add-config max.message.bytes=2097152
+
+# HBase 参数修改后：
+stop-hbase.sh && start-hbase.sh
+\end{lstlisting}
+
+\begin{warnbox}[考试要点]
+参数修改后一定要验证！
+\begin{lstlisting}[language=bash]
+# 验证 HDFS 副本数
+hdfs dfsadmin -report  # 查看副本数
+
+# 验证 Kafka 分区数
+kafka-topics.sh --describe --bootstrap-server node1:9092 --topic user-behavior
+
+# 验证 Spark 内存
+spark-submit --version  # 查看默认配置
+\end{lstlisting}
+\end{warnbox}
+
+%========================================
+% Flink（高职要求）
+%========================================
+
+\section{命令速查表（可打印）}
+
+\begin{tipbox}[考场速查提示]
+以下是竞赛中最常用的命令，建议打印后带入考场。
+\end{tipbox}
+%========================================
+%========================================
+
+\begin{table}[H]
+\centering
+\caption{Hadoop命令}
+\begin{tabular}{ll}
+\toprule
+\textbf{命令} & \textbf{说明} \\
+\midrule
+start-all.sh & 启动Hadoop集群 \\
+stop-all.sh & 停止Hadoop集群 \\
+hdfs dfs -ls / & 查看HDFS根目录 \\
+hdfs dfs -mkdir /path & 创建目录 \\
+hdfs dfs -put local hdfs & 上传文件 \\
+hdfs dfsadmin -report & 查看集群状态 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table}[H]
+\centering
+\caption{HBase命令}
+\begin{tabular}{ll}
+\toprule
+\textbf{命令} & \textbf{说明} \\
+\midrule
+start-hbase.sh & 启动HBase \\
+hbase shell & 进入HBase Shell \\
+list & 列出表 \\
+create 't', 'cf' & 创建表 \\
+put 't', 'r', 'cf:c', 'v' & 插入数据 \\
+get 't', 'r' & 查询数据 \\
+scan 't' & 扫描表 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table}[H]
+\centering
+\caption{Hive命令}
+\begin{tabular}{ll}
+\toprule
+\textbf{命令} & \textbf{说明} \\
+\midrule
+hive & 启动Hive CLI \\
+hiveserver2 & 启动HiveServer2 \\
+show databases & 查看数据库 \\
+use db & 切换数据库 \\
+show tables & 查看表 \\
+select * from t & 查询数据 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table}[H]
+\centering
+\caption{Spark命令}
+\begin{tabular}{ll}
+\toprule
+\textbf{命令} & \textbf{说明} \\
+\midrule
+start-all.sh & 启动Spark集群 \\
+spark-shell & 启动Scala Shell \\
+pyspark & 启动Python Shell \\
+spark-submit & 提交应用 \\
+spark-sql & 启动SQL Shell \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table}[H]
+\centering
+\caption{Kafka命令}
+\begin{tabular}{ll}
+\toprule
+\textbf{命令} & \textbf{说明} \\
+\midrule
+kafka-server-start.sh & 启动Kafka \\
+kafka-topics.sh --create & 创建Topic \\
+kafka-topics.sh --list & 列出Topic \\
+kafka-console-producer.sh & 启动生产者 \\
+kafka-console-consumer.sh & 启动消费者 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+%========================================
+\section{性能调优与日志管理}
+%========================================
+
+\subsection{基础性能调优}
+
+\subsubsection{HDFS 块大小}
+
+\begin{lstlisting}[language=bash]
+# 修改 hdfs-site.xml 中的 dfs.blocksize
+# 默认 128MB，大文件（视频、日志）可设为 256MB
+hdfs dfs -D dfs.blocksize=268435456 -put largefile.dat /user/data/
+\end{lstlisting}
+
+\begin{tipbox}[HDFS 块大小选择]
+\begin{itemize}
+    \item 默认 128MB 适合大多数场景
+    \item 大文件（>1GB）设为 256MB 减少元数据开销
+    \item 小文件（<10MB）合并后上传，减少 NameNode 压力
+\end{itemize}
+\end{tipbox}
+
+\subsubsection{YARN 内存配置}
+
+\begin{lstlisting}[language=bash]
+# yarn-site.xml 关键参数
+yarn.nodemanager.resource.memory-mb=8192    # 节点可用内存
+yarn.scheduler.minimum-allocation-mb=1024   # 最小容器内存
+yarn.nodemanager.vmem-check-enabled=false   # 关闭虚拟内存检查（竞赛环境）
+\end{lstlisting}
+
+\subsubsection{Spark Executor 配置}
+
+\begin{lstlisting}[language=bash]
+# 推荐配置（8核16GB环境）
+spark-submit --master yarn \
+    --num-executors 4 \
+    --executor-cores 2 \
+    --executor-memory 4g \
+    --driver-memory 2g \
+    your_app.py
+\end{lstlisting}
+
+\begin{tipbox}[Spark Executor 最佳实践]
+\begin{itemize}
+    \item Executor 数量 = 节点数 $\times$ 每节点 Executor 数
+    \item 每 Executor 核心数建议 2-5
+    \item Executor 内存建议 4-8GB（留 1GB 给系统）
+\end{itemize}
+\end{tipbox}
+
+\subsubsection{Kafka 分区与消费者}
+
+\begin{lstlisting}[language=bash]
+# 创建 Topic 时设置分区数（建议 = 消费者线程数）
+kafka-topics.sh --create --bootstrap-server node1:9092 \
+    --replication-factor 3 --partitions 6 --topic user-behavior
+\end{lstlisting}
+
+\subsection{组件日志路径速查表}
+
+\begin{table}[H]
+\centering
+\caption{各组件日志文件路径}
+{\footnotesize
+\begin{tabular}{ll}
+\toprule
+\textbf{组件} & \textbf{日志路径} \\
+\midrule
+HDFS & \texttt{\$HADOOP/logs/hadoop-*.log} \\
+YARN & \texttt{\$HADOOP/logs/yarn-*.log} \\
+Zookeeper & \texttt{\$ZK/logs/zookeeper.out} \\
+HBase & \texttt{\$HBASE/logs/hbase-*.log} \\
+Hive & \texttt{\$HIVE/logs/hive.log} \\
+Spark & \texttt{\$SPARK/logs/spark-*.log} \\
+Kafka & \texttt{\$KAFKA/logs/server.log} \\
+Flume & 控制台输出或指定文件 \\
+ClickHouse & \texttt{/var/log/clickhouse-server/} \\
+\bottomrule
+\end{tabular}
+}
+\end{table}
+
+\begin{tipbox}[排查问题的方法]
+\begin{enumerate}
+    \item 检查服务进程是否在运行：\texttt{jps} 或 \texttt{ps aux | grep 组件名}
+    \item 查看对应日志文件的最后几行：\texttt{tail -100 \$LOG\_FILE}
+    \item 检查端口是否被占用：\texttt{netstat -anp | grep 端口号}
+    \item 检查网络连通性：\texttt{ping node2}，\texttt{telnet node2 2181}
+    \item 检查防火墙和 SELinux 是否关闭
+\end{enumerate}
+\end{tipbox}
+
+%========================================
+\section{常见问题排查}
+%========================================
+
+\begin{warnbox}[问题1：Hadoop启动失败]
+\textbf{现象}：NameNode或DataNode无法启动
+
+\textbf{解决方案}：
+\begin{lstlisting}[language=bash]
+# 检查日志
+cat $HADOOP_HOME/logs/hadoop-root-namenode-node1.log
+
+# 格式化NameNode（注意：会清空数据）
+hdfs namenode -format
+
+# 检查端口占用
+netstat -anp | grep 9000
+\end{lstlisting}
+\end{warnbox}
+
+\begin{warnbox}[问题2：HBase连接Zookeeper失败]
+\textbf{现象}：HMaster无法启动
+
+\textbf{解决方案}：
+\begin{lstlisting}[language=bash]
+# 检查Zookeeper状态
+zkServer.sh status
+
+# 检查hbase-site.xml配置
+cat $HBASE_HOME/conf/hbase-site.xml
+
+# 检查HDFS上HBase目录
+hdfs dfs -ls /hbase
+\end{lstlisting}
+\end{warnbox}
+
+\begin{tipbox}[如果从 PDF 复制 URL 有问题]
+从 PDF 中复制的长 URL 可能会有空格。解决办法：
+\begin{enumerate}
+    \item 复制后粘贴到终端，手动删除 URL 中的空格
+    \item 或使用本书提供的安装脚本（见附录 B）
+    \item 或在浏览器中打开 URL 后从地址栏复制
+\end{enumerate}
+\end{tipbox}
+
+\begin{warnbox}[故障排查决策树——按图索骥找问题]
+当某个组件启动失败时，按以下顺序排查：
+
+\begin{footnotesize}
+\begin{verbatim}
+服务启动失败？
+  |
+  |-- jps 看进程是否在运行
+  |     |-- 不在 → 看日志（cat $组件/logs/*.log | tail -50）
+  |     |        |-- 日志报 "Connection refused" → 检查依赖服务是否启动
+  |     |        |-- 日志报 "OutOfMemory" → 减小堆内存
+  |     |        |-- 日志报 "Permission denied" → 检查用户权限
+  |     |        |-- 日志报 "Address already in use" → 端口被占用，换端口或杀进程
+  |     |-- 在 → 服务已启动，检查下一步
+  |
+  |-- 客户端连不上？
+  |     |-- ping 目标主机名 → 检查网络
+  |     |-- 检查 /etc/hosts 是否一致（三台机器都要检查）
+  |     |-- 检查防火墙（systemctl status firewalld）
+  |     |-- 检查 advertised.listeners（Kafka 特有）
+  |
+  |-- 数据读不到？
+        |-- HDFS: hdfs dfs -ls /  看文件是否存在
+        |-- Hive: show tables; 看表是否创建
+        |-- Kafka: kafka-topics.sh --list 看 Topic 是否存在
+\end{verbatim}
+\end{footnotesize}
+\end{warnbox}
+
+\begin{tipbox}[配套练习]
+本手册的配套练习见各章节内的动手练习框，建议按章节顺序边学边练。
+\end{tipbox}
+
+\begin{tipbox}[学习建议]
+\begin{enumerate}
+    \item \textbf{循序渐进}：按照章节顺序逐步部署，确保每个组件正常运行后再进行下一步
+    \item \textbf{理解原理}：不要只记命令，要理解每个组件的作用和工作原理
+    \item \textbf{动手实践}：多练习各种操作命令，熟悉各个组件的使用
+    \item \textbf{查看日志}：遇到问题时首先查看日志文件，定位问题原因
+    \item \textbf{联调测试}：完成部署后一定要进行数据流转测试，确保各组件协同工作
+\end{enumerate}
+\end{tipbox}
+
+%========================================
+\section{附录：一键下载安装脚本}
+%========================================
+
+\begin{tipbox}[使用方法]
+将以下脚本保存为 \texttt{download.sh}，在 node1 上执行 \texttt{bash download.sh}，即可自动下载所有安装包。
+\end{tipbox}
+
+\begin{lstlisting}[language=bash]
+#!/bin/bash
+# 一键下载所有大数据组件安装包
+# 在 node1 上执行: bash download.sh
+
+mkdir -p /opt/bigdata-pkg && cd /opt/bigdata-pkg
+
+echo "=== 下载 Hadoop ==="
+wget https://repo.huaweicloud.com/apache/hadoop/common/hadoop-3.3.4/hadoop-3.3.4.tar.gz
+
+echo "=== 下载 Zookeeper ==="
+wget https://repo.huaweicloud.com/apache/zookeeper/zookeeper-3.7.1/apache-zookeeper-3.7.1-bin.tar.gz
+
+echo "=== 下载 HBase ==="
+wget https://repo.huaweicloud.com/apache/hbase/2.4.15/hbase-2.4.15-bin.tar.gz
+
+echo "=== 下载 Hive ==="
+wget https://repo.huaweicloud.com/apache/hive/hive-3.1.3/apache-hive-3.1.3-bin.tar.gz
+
+echo "=== 下载 Spark ==="
+wget https://repo.huaweicloud.com/apache/spark/spark-3.3.2/spark-3.3.2-bin-hadoop3.tgz
+
+echo "=== 下载 Kafka ==="
+wget https://repo.huaweicloud.com/apache/kafka/3.4.0/kafka_2.12-3.4.0.tgz
+
+echo "=== 下载 Flume ==="
+wget https://repo.huaweicloud.com/apache/flume/1.11.0/apache-flume-1.11.0-bin.tar.gz
+
+echo "=== 全部下载完成 ==="
+ls -lh /opt/bigdata-pkg/
+\end{lstlisting}
+
+\begin{tipbox}[下载完成后]
+\begin{enumerate}
+    \item 将安装包分发到 node2、node3：\texttt{scp *.tar.gz node2:/opt/}
+    \item 在每台机器上解压安装（见各组件章节）
+\end{enumerate}
+\end{tipbox}
+
+\end{document}
