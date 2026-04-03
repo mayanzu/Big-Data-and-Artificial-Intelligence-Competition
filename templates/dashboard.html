@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>电商数据仿真平台 - 大数据竞赛</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.4/socket.io.min.js"></script>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", sans-serif; background: #0f0f13; color: #e0e0e0; }
+.header { background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%); padding: 20px 30px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #2a2a3a; }
+.header h1 { font-size: 22px; font-weight: 600; color: #fff; }
+.header .status { display: flex; align-items: center; gap: 8px; }
+.header .dot { width: 8px; height: 8px; border-radius: 50%; background: #00e676; animation: pulse 2s infinite; }
+@keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+.header .status-text { font-size: 13px; color: #aaa; }
+.container { max-width: 1400px; margin: 0 auto; padding: 20px; }
+.stats-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 20px; }
+.stat-card { background: #1a1a2e; border-radius: 12px; padding: 20px; border: 1px solid #2a2a3a; }
+.stat-card .label { font-size: 12px; color: #888; text-transform: uppercase; letter-spacing: 1px; }
+.stat-card .value { font-size: 28px; font-weight: 700; margin: 8px 0; color: #fff; }
+.stat-card .change { font-size: 12px; color: #00e676; }
+.charts-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px; }
+.chart-card { background: #1a1a2e; border-radius: 12px; padding: 20px; border: 1px solid #2a2a3a; }
+.chart-card h3 { font-size: 15px; font-weight: 600; margin-bottom: 12px; color: #fff; }
+.feed-section { background: #1a1a2e; border-radius: 12px; padding: 20px; border: 1px solid #2a2a3a; margin-bottom: 20px; }
+.feed-section h3 { font-size: 15px; font-weight: 600; margin-bottom: 12px; color: #fff; }
+.table-wrap { max-height: 400px; overflow-y: auto; }
+table { width: 100%; border-collapse: collapse; font-size: 13px; }
+thead { position: sticky; top: 0; background: #16213e; }
+th { padding: 10px 12px; text-align: left; color: #aaa; font-weight: 500; border-bottom: 1px solid #2a2a3a; }
+td { padding: 8px 12px; border-bottom: 1px solid #1e1e2e; color: #ccc; }
+tr:hover td { background: #1e1e32; }
+.badge { padding: 2px 8px; border-radius: 10px; font-size: 11px; font-weight: 500; }
+.badge-view { background: #1565c0; color: #e3f2fd; }
+.badge-click { background: #7b1fa2; color: #f3e5f5; }
+.badge-add_cart { background: #ef6c00; color: #fff3e0; }
+.badge-buy { background: #2e7d32; color: #e8f5e9; }
+.badge-search { background: #00838f; color: #e0f7fa; }
+.badge-collect { background: #c62828; color: #ffebee; }
+.badge-share { background: #6a1b9a; color: #f3e5f5; }
+.api-section { background: #1a1a2e; border-radius: 12px; padding: 20px; border: 1px solid #2a2a3a; margin-bottom: 20px; }
+.api-section h3 { font-size: 15px; font-weight: 600; margin-bottom: 12px; color: #fff; }
+.api-item { display: flex; align-items: center; gap: 10px; padding: 10px 0; border-bottom: 1px solid #1e1e2e; }
+.api-method { padding: 3px 10px; border-radius: 6px; font-size: 12px; font-weight: 600; background: #2e7d32; color: #fff; }
+.api-url { font-family: "SF Mono", "Fira Code", monospace; font-size: 13px; color: #64b5f6; }
+.api-desc { font-size: 12px; color: #888; margin-left: auto; }
+.footer { text-align: center; padding: 20px; font-size: 12px; color: #555; }
+@media (max-width: 768px) { .stats-row { grid-template-columns: repeat(2, 1fr); } .charts-row { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+<div class="header">
+    <h1>电商数据仿真平台</h1>
+    <div class="status">
+        <div class="dot"></div>
+        <span class="status-text">实时运行中 | <span id="generatedCount">0</span> 条已生成</span>
+    </div>
+</div>
+
+<div class="container">
+    <!-- 统计卡片 -->
+    <div class="stats-row">
+        <div class="stat-card">
+            <div class="label">总记录数</div>
+            <div class="value" id="totalRecords">-</div>
+            <div class="change">实时更新中</div>
+        </div>
+        <div class="stat-card">
+            <div class="label">今日生成</div>
+            <div class="value" id="todayRecords">-</div>
+            <div class="change">+1条/秒</div>
+        </div>
+        <div class="stat-card">
+            <div class="label">转化率</div>
+            <div class="value" id="conversionRate">-</div>
+            <div class="change">浏览→购买</div>
+        </div>
+        <div class="stat-card">
+            <div class="label">品类数</div>
+            <div class="value">15</div>
+            <div class="change">固定数据维度</div>
+        </div>
+    </div>
+
+    <!-- 图表 -->
+    <div class="charts-row">
+        <div class="chart-card">
+            <h3>事件类型分布</h3>
+            <canvas id="eventChart"></canvas>
+        </div>
+        <div class="chart-card">
+            <h3>品类分布</h3>
+            <canvas id="categoryChart"></canvas>
+        </div>
+    </div>
+
+    <!-- 实时数据流 -->
+    <div class="feed-section">
+        <h3>实时数据流</h3>
+        <div class="table-wrap">
+            <table>
+                <thead><tr>
+                    <th>时间</th><th>用户ID</th><th>事件</th><th>品类</th>
+                    <th>商品ID</th><th>价格</th><th>设备</th><th>停留(s)</th>
+                </tr></thead>
+                <tbody id="feedBody"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- API 接口文档 -->
+    <div class="api-section">
+        <h3>API 接口文档（共 14 个接口）</h3>
+        <p style="color:#888; font-size:13px; margin-bottom:16px;">所有接口无需鉴权，直接访问。地址：<code>http://163.7.1.176:8889</code></p>
+
+        <h4 style="color:#fff; margin:20px 0 10px;">行为数据接口</h4>
+        <div class="api-item">
+            <span class="api-method">GET</span>
+            <span class="api-url">/api/data?n=10</span>
+            <span class="api-desc">生成 N 条干净的实时行为数据（1-100）</span>
+        </div>
+        <div class="api-item">
+            <span class="api-method">GET</span>
+            <span class="api-url">/api/dirty?n=50</span>
+            <span class="api-desc">生成含缺失值/重复值/异常值的脏数据（1-200）</span>
+        </div>
+        <div class="api-item">
+            <span class="api-method">GET</span>
+            <span class="api-url">/api/dirty/csv?n=100</span>
+            <span class="api-desc">生成脏数据 CSV 格式（Tab 逗号分隔）</span>
+        </div>
+        <div class="api-item">
+            <span class="api-method">GET</span>
+            <span class="api-url">/api/dirty/tsv?n=100</span>
+            <span class="api-desc">生成脏数据 TSV 格式（Tab 分隔）</span>
+        </div>
+        <div class="api-item">
+            <span class="api-method">GET</span>
+            <span class="api-url">/api/dirty/enhanced?n=50</span>
+            <span class="api-desc">增强版脏数据（混合编码/日期不一致/多余空格）</span>
+        </div>
+        <div class="api-item">
+            <span class="api-method">GET</span>
+            <span class="api-url">/api/log?lines=10</span>
+            <span class="api-desc">逐行 JSON 日志输出（适合 Flume 采集，1-50）</span>
+        </div>
+
+        <h4 style="color:#fff; margin:20px 0 10px;">数据查询接口</h4>
+        <div class="api-item">
+            <span class="api-method">GET</span>
+            <span class="api-url">/api/history?page=1&per_page=50</span>
+            <span class="api-desc">历史行为数据分页查询</span>
+        </div>
+        <div class="api-item">
+            <span class="api-method">GET</span>
+            <span class="api-url">/api/history?event_type=buy</span>
+            <span class="api-desc">按事件类型筛选（view/click/add_cart/buy/search/collect/share）</span>
+        </div>
+        <div class="api-item">
+            <span class="api-method">GET</span>
+            <span class="api-url">/api/history?category=手机数码</span>
+            <span class="api-desc">按品类筛选（15个品类）</span>
+        </div>
+
+        <h4 style="color:#fff; margin:20px 0 10px;">用户与商品接口</h4>
+        <div class="api-item">
+            <span class="api-method">GET</span>
+            <span class="api-url">/api/users?page=1&per_page=100</span>
+            <span class="api-desc">用户画像数据（1000个用户：name/age/gender/city/member_level）</span>
+        </div>
+        <div class="api-item">
+            <span class="api-method">GET</span>
+            <span class="api-url">/api/products?page=1&category=手机数码</span>
+            <span class="api-desc">商品数据（500个：name/category/price/rating/sales）</span>
+        </div>
+        <div class="api-item">
+            <span class="api-method">GET</span>
+            <span class="api-url">/api/join?n=100</span>
+            <span class="api-desc">三表关联数据（行为+用户+商品，可用于多表 JOIN 练习）</span>
+        </div>
+
+        <h4 style="color:#fff; margin:20px 0 10px;">分析与导出接口</h4>
+        <div class="api-item">
+            <span class="api-method">GET</span>
+            <span class="api-url">/api/stats</span>
+            <span class="api-desc">统计汇总（事件分布/品类统计/转化率）</span>
+        </div>
+        <div class="api-item">
+            <span class="api-method">GET</span>
+            <span class="api-url">/api/timeseries?days=7&granularity=hour</span>
+            <span class="api-desc">按小时/天的统计数据（hour 或 day）</span>
+        </div>
+        <div class="api-item">
+            <span class="api-method">GET</span>
+            <span class="api-url">/api/export/csv?n=5000</span>
+            <span class="api-desc">批量导出 CSV（最多 10000 条，适合上传 HDFS）</span>
+        </div>
+        <div class="api-item">
+            <span class="api-method">GET</span>
+            <span class="api-url">/api/hive/ddl?table=user_behavior</span>
+            <span class="api-desc">自动生成 Hive 建表 SQL（JSON/CSV/TSV 三种格式）</span>
+        </div>
+
+        <h4 style="color:#fff; margin:20px 0 10px;">Python 使用示例</h4>
+        <pre style="background:#1e1e2e; padding:16px; border-radius:8px; font-size:12px; overflow-x:auto; color:#ccc;">
+import requests
+import pandas as pd
+
+# 获取干净数据
+df = pd.DataFrame(requests.get("http://163.7.1.176:8889/api/data?n=500").json())
+
+# 获取脏数据（用于清洗练习）
+dirty = pd.DataFrame(requests.get("http://163.7.1.176:8889/api/dirty?n=200").json())
+
+# 获取三表关联数据
+data = requests.get("http://163.7.1.176:8889/api/join?n=100").json()
+behaviors = pd.DataFrame(data['behaviors'])
+users = pd.DataFrame(data['users'])
+products = pd.DataFrame(data['products'])
+
+# 批量导出 CSV（适合上传 HDFS）
+csv_text = requests.get("http://163.7.1.176:8889/api/export/csv?n=5000").text
+
+# 获取时间序列数据
+ts = pd.DataFrame(requests.get("http://163.7.1.176:8889/api/timeseries?days=7").json())
+
+# 获取 Hive 建表 SQL
+ddl = requests.get("http://163.7.1.176:8889/api/hive/ddl").json()
+print(ddl['create_table'])
+        </pre>
+    </div>
+
+    <div class="footer">电商数据仿真平台 - 大数据竞赛培训专用 | 实时生成电商用户行为数据</div>
+</div>
+
+<script>
+// 图表初始化
+const eventCtx = document.getElementById('eventChart').getContext('2d');
+const catCtx = document.getElementById('categoryChart').getContext('2d');
+
+const eventChart = new Chart(eventCtx, {
+    type: 'doughnut',
+    data: {
+        labels: ['浏览', '点击', '加购', '购买', '搜索', '收藏', '分享'],
+        datasets: [{
+            data: [0,0,0,0,0,0,0],
+            backgroundColor: ['#1565c0','#7b1fa2','#ef6c00','#2e7d32','#00838f','#c62828','#6a1b9a'],
+            borderWidth: 0
+        }]
+    },
+    options: { responsive: true, plugins: { legend: { position: 'right', labels: { color: '#aaa', font: { size: 11 } } } } }
+});
+
+const categoryChart = new Chart(catCtx, {
+    type: 'bar',
+    data: {
+        labels: [],
+        datasets: [{
+            label: '记录数',
+            data: [],
+            backgroundColor: '#1565c0',
+            borderRadius: 4
+        }]
+    },
+    options: {
+        responsive: true,
+        indexAxis: 'y',
+        plugins: { legend: { display: false } },
+        scales: { x: { ticks: { color: '#888' }, grid: { color: '#1e1e2e' } }, y: { ticks: { color: '#aaa', font: { size: 10 } }, grid: { display: false } } }
+    }
+});
+
+// Socket.IO 实时数据
+const socket = io();
+socket.on('new_event', function(data) {
+    // 添加到实时表格
+    const tbody = document.getElementById('feedBody');
+    const tr = document.createElement('tr');
+    const badgeClass = 'badge-' + data.event_type;
+    tr.innerHTML = `<td>${data.timestamp}</td><td>${data.user_id}</td>
+        <td><span class="badge ${badgeClass}">${data.event_type}</span></td>
+        <td>${data.category || '-'}</td><td>${data.product_id || '-'}</td>
+        <td>${data.price ? '¥' + data.price.toFixed(2) : '-'}</td>
+        <td>${data.device}</td><td>${data.stay_time || '-'}</td>`;
+    tbody.insertBefore(tr, tbody.firstChild);
+    if (tbody.children.length > 50) tbody.removeChild(tbody.lastChild);
+});
+
+// 定时刷新统计
+function updateStats() {
+    fetch('/api/stats').then(r => r.json()).then(data => {
+        document.getElementById('totalRecords').textContent = data.total_records.toLocaleString();
+        document.getElementById('todayRecords').textContent = data.today_records.toLocaleString();
+        document.getElementById('generatedCount').textContent = data.generated_count.toLocaleString();
+        document.getElementById('conversionRate').textContent = data.conversion_rate + '%';
+
+        // 更新事件分布图
+        const eventTypeMap = {'view':0,'click':1,'add_cart':2,'buy':3,'search':4,'collect':5,'share':6};
+        const evData = [0,0,0,0,0,0,0];
+        for (const [k, v] of Object.entries(data.event_stats)) {
+            if (eventTypeMap[k] !== undefined) evData[eventTypeMap[k]] = v;
+        }
+        eventChart.data.datasets[0].data = evData;
+        eventChart.update();
+
+        // 更新品类分布图
+        const cats = Object.keys(data.category_stats).sort((a,b) => data.category_stats[b] - data.category_stats[a]);
+        const vals = cats.map(c => data.category_stats[c]);
+        categoryChart.data.labels = cats;
+        categoryChart.data.datasets[0].data = vals;
+        categoryChart.update();
+    });
+}
+updateStats();
+setInterval(updateStats, 3000);
+
+// 初始化加载历史数据
+fetch('/api/history?page=1&per_page=20').then(r => r.json()).then(data => {
+    const tbody = document.getElementById('feedBody');
+    data.data.forEach(d => {
+        const tr = document.createElement('tr');
+        const badgeClass = 'badge-' + d.event_type;
+        tr.innerHTML = `<td>${d.timestamp}</td><td>${d.user_id}</td>
+            <td><span class="badge ${badgeClass}">${d.event_type}</span></td>
+            <td>${d.category || '-'}</td><td>${d.product_id || '-'}</td>
+            <td>${d.price ? '¥' + d.price.toFixed(2) : '-'}</td>
+            <td>${d.device}</td><td>${d.stay_time || '-'}</td>`;
+        tbody.appendChild(tr);
+    });
+});
+</script>
+</body>
+</html>
